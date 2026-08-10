@@ -1,0 +1,43 @@
+name: Deploy MiClick to Netlify
+
+on:
+  push:
+    branches:
+      - main # Se ejecuta cada vez que hagas push a la rama main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Obtener el código fuente
+      - uses: actions/checkout@v3
+
+      # 2. Configurar Java para Flutter
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. Configurar el SDK de Flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # 4. Instalar dependencias
+      - run: flutter pub get
+
+      # 5. Compilar para la Web
+      - run: flutter build web --release
+
+      # 6. Desplegar la carpeta build/web a Netlify
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: './build/web'
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Automatic deploy from GitHub Actions"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

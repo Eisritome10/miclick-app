@@ -7,8 +7,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: 'https://TU_PROYECTO.supabase.co', // Reemplaza con tu Project URL
-    anonKey: 'TU_ANON_KEY_PUBLIC',          // Reemplaza con tu Anon Key
+    url: 'https://yncojnimqcgyxwfdkfoo.supabase.co', // Reemplaza con tu Project URL
+    anonKey: 'sb_publishable_VGoNmLEsyiPKQeLkdbs67w_m8UCinJ3',          // Reemplaza con tu Anon Key
   );
 
   runApp(const MiClickApp());
@@ -143,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _isSignUp ? 'Crea tu cuenta para comenzar' : 'Inicia sesión en la plataforma',
+                  _isSignUp ? 'Crea tu cuenta para comenzar' : 'Inicia sesión en la plataforma :)',
                   style: const TextStyle(color: Colors.white70),
                 ),
                 const SizedBox(height: 24),

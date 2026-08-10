@@ -11,7 +11,7 @@ class SupabaseService {
     try {
       return await client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'https://tu-app-miclick.vercel.app', // Tu URL de producción
+        redirectTo: 'https://miclickapp.netlify.app', // Tu URL de producción
       );
     } catch (e) {
       print('Error al iniciar sesión con Google: $e');
