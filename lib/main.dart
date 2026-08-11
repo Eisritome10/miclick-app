@@ -97,8 +97,26 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isSignUp = false;
   bool _isGuestMode = false;
 
+  // Traducir los mensajes de error de Supabase
+  String _getAuthErrorMessage(AuthException error) {
+    final message = error.message.toLowerCase();
+    if (message.contains('invalid login credentials') || message.contains('invalid_credentials')) {
+      return 'Correo o contraseña incorrectos. Revisa tus datos.';
+    } else if (message.contains('user already registered') || message.contains('email_exists')) {
+      return 'Este correo ya está registrado. Intenta iniciar sesión.';
+    } else if (message.contains('password should be at least')) {
+      return 'La contraseña debe tener al menos 6 caracteres.';
+    } else if (message.contains('unable to validate email address') || message.contains('invalid_email')) {
+      return 'Por favor ingresa un correo electrónico válido.';
+    }
+    return 'Error de autenticación: ${error.message}';
+  }
+
   Future<void> _submitEmailAuth() async {
-    if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa los campos de correo y contraseña.')),
       );
@@ -109,20 +127,29 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       if (_isSignUp) {
         await SupabaseService.signUpWithEmail(
-          _emailController.text.trim(),
-          _passwordController.text.trim(),
+          email,
+          password,
           _nameController.text.trim().isEmpty ? 'Explorador/a' : _nameController.text.trim(),
         );
       } else {
-        await SupabaseService.signInWithEmail(
-          _emailController.text.trim(),
-          _passwordController.text.trim(),
+        await SupabaseService.signInWithEmail(email, password);
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_getAuthErrorMessage(e)),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          SnackBar(
+            content: Text('Ocurrió un error inesperado: ${e.toString()}'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } finally {
@@ -134,10 +161,22 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       await SupabaseService.signInAsGuest(_guestNameController.text.trim());
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_getAuthErrorMessage(e)),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al ingresar como invitado: ${e.toString()}')),
+          SnackBar(
+            content: Text('Error al ingresar como invitado: ${e.toString()}'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } finally {
