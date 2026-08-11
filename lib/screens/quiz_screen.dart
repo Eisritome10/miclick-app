@@ -4,10 +4,10 @@ import '../services/supabase_service.dart';
 
 class QuizOption {
   final String text;
-  final int v; // Verificación
-  final int e; // Impulso Emocional
-  final int a; // Conciencia Algorítmica/IA
-  final int c; // Creación Responsable
+  final int v;
+  final int e;
+  final int a;
+  final int c;
 
   QuizOption({
     required this.text,
@@ -18,14 +18,13 @@ class QuizOption {
   });
 }
 
-// Paso narrativo dentro de una escena general
 class SceneStep {
   final String time;
   final String title;
   final String description;
   final String imagePath;
-  final String? characterDialog; // Diálogo de personaje
-  final List<QuizOption>? options; // Solo si requiere decisión
+  final String? characterDialog;
+  final List<QuizOption>? options;
 
   SceneStep({
     required this.time,
@@ -48,7 +47,6 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   int _currentStepIndex = 0;
 
-  // Acumuladores de los 4 Ejes MIL
   int _scoreV = 0;
   int _scoreE = 0;
   int _scoreA = 0;
@@ -56,9 +54,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
   List<SceneStep> _getSteps() {
     return [
-      // ==========================================
-      // ESCENA GENERAL 1: EL DESPERTAR Y EL MENSAJE
-      // ==========================================
+      // ESCENA 1
       SceneStep(
         time: "8:00 a. m.",
         title: "1. DESPERTAR - Abriendo los ojos",
@@ -84,9 +80,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ],
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 2: DESAYUNO Y DIÁLOGOS
-      // ==========================================
+      // ESCENA 2
       SceneStep(
         time: "8:20 a. m.",
         title: "2. DESAYUNO - La Cocina",
@@ -107,9 +101,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ],
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 3: REDES SOCIALES, AUDÍFONOS Y CINE
-      // ==========================================
+      // ESCENA 3
       SceneStep(
         time: "11:00 a. m.",
         title: "3. REDES SOCIALES - Oferta en tu Feed",
@@ -135,9 +127,7 @@ class _QuizScreenState extends State<QuizScreen> {
         description: "Sigues deslizando la red social y te cruzas con un anuncio de promoción 3x2 en cine. Te recuerdas que hoy quedaste en ir al cine con tus amigos.",
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 4: EL CINE Y EL DEEPFAKE
-      // ==========================================
+      // ESCENA 4
       SceneStep(
         time: "4:30 p. m.",
         title: "4. CINE - Salida con amigos",
@@ -158,9 +148,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ],
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 5: REGRESO A CASA Y VIAJE
-      // ==========================================
+      // ESCENA 5
       SceneStep(
         time: "7:30 p. m.",
         title: "5. REGRESO A CASA - La propuesta de Papá",
@@ -181,9 +169,7 @@ class _QuizScreenState extends State<QuizScreen> {
         ],
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 6: NOCHE Y COMUNICADO DE SISMO
-      // ==========================================
+      // ESCENA 6
       SceneStep(
         time: "11:45 p. m.",
         title: "6. NOCHE - El temblor",
@@ -261,7 +247,6 @@ class _QuizScreenState extends State<QuizScreen> {
       profile = "Investigador/a";
     }
 
-    // Guardado en Supabase en tiempo real
     SupabaseService.saveQuizResult(
       scoreV: _scoreV,
       scoreE: _scoreE,
@@ -270,7 +255,7 @@ class _QuizScreenState extends State<QuizScreen> {
       finalProfile: profile,
     );
 
-    // Navegación a la Pantalla de Análisis (Carga de 3 segundos con video)
+    // Redirección a la Pantalla de Análisis de 3 Segundos con Video
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -335,7 +320,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // ILUSTRACIÓN DE LA ESCENA (Andrea)
+                // ILUSTRACIÓN DE LA ESCENA
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
@@ -370,7 +355,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
 
-                // DIÁLOGO DEL PERSONAJE (SI EXISTE)
+                // DIÁLOGO DEL PERSONAJE
                 if (currentStep.characterDialog != null) ...[
                   const SizedBox(height: 14),
                   Container(
@@ -389,7 +374,6 @@ class _QuizScreenState extends State<QuizScreen> {
 
                 const SizedBox(height: 28),
 
-                // SI EL PASO TIENE OPCIONES DE DECISIÓN
                 if (hasOptions) ...[
                   const Text(
                     '¿Qué decisión vas a tomar?',
@@ -417,9 +401,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                     );
                   }).toList(),
-                ] 
-                // SI ES UN PASO INTERMEDIO (SÓLO BOTÓN CONTINUAR)
-                else ...[
+                ] else ...[
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -444,9 +426,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 }
 
-// ==============================================================================
-// PANTALLA INTERMEDIA DE CARGA / ANÁLISIS DE RESULTADOS (3 Segundos + Video)
-// ==============================================================================
+// PANTALLA INTERMEDIA DE CARGA / ANÁLISIS DE RESULTADOS (3s con Video)
 class AnalyzingScreen extends StatefulWidget {
   final String profile;
   final int scoreV;
@@ -475,15 +455,13 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
   void initState() {
     super.initState();
 
-    // Carga de video en bucle
-    _videoController = VideoPlayerController.asset('assets/videos/menu2.mp4')
+    _videoController = VideoPlayerController.asset('assets/videos/menu_bg.mp4')
       ..initialize().then((_) {
         setState(() {});
         _videoController.setLooping(true);
         _videoController.play();
       });
 
-    // Cambiar texto a mitad de tiempo
     Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
         setState(() {
@@ -492,7 +470,6 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
       }
     });
 
-    // Temporizador de 3 segundos antes de mostrar el resultado
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.pushReplacement(
@@ -522,7 +499,6 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // 1. VIDEO DE FONDO EN BUCLE
           if (_videoController.value.isInitialized)
             SizedBox.expand(
               child: FittedBox(
@@ -537,12 +513,8 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
           else
             Container(color: const Color(0xFF0F172A)),
 
-          // 2. OVERLAY OSCURO
-          Container(
-            color: Colors.black.withOpacity(0.70),
-          ),
+          Container(color: Colors.black.withOpacity(0.70)),
 
-          // 3. MENSAJE Y SPINNER DE SUSPENSO
           Center(
             child: Padding(
               padding: const EdgeInsets.all(32.0),
@@ -599,9 +571,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
   }
 }
 
-// ==============================================================================
-// PANTALLA DE RESULTADOS Y RECOMENDACIONES MIL
-// ==============================================================================
+// PANTALLA DE RESULTADOS
 class ResultScreen extends StatelessWidget {
   final String profile;
   final int scoreV;
