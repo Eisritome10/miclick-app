@@ -69,33 +69,45 @@ class SupabaseService {
   }
 
   // 5. Escuchador en Tiempo Real para el Dashboard Admin
-  // Método optimizado para obtener los resultados del quiz junto con el nombre del usuario
+  // Método optimizado para transmitir los quizzes en tiempo real al Admin
   static Stream<List<Map<String, dynamic>>> getRealtimeQuizSessions() {
     return client
         .from('quiz_sessions')
         .stream(primaryKey: ['id'])
         .order('completed_at', ascending: false)
         .asyncMap((sessions) async {
-          // Consultar los datos de perfiles para adjuntar el nombre
-          final userIds = sessions.map((s) => s['user_id'] as String).toSet().toList();
-          
+          if (sessions.isEmpty) return [];
+
+          // Obtener IDs de usuarios únicos
+          final userIds = sessions
+              .map((s) => s['user_id'] as String?)
+              .where((id) => id != null)
+              .cast<String>()
+              .toSet()
+              .toList();
+
           if (userIds.isEmpty) return sessions;
 
-          final profilesResponse = await client
-              .from('profiles')
-              .select('id, full_name, role')
-              .filter('id', 'in', userIds);
+          try {
+            // Consultar perfiles asociados para mostrar nombres de los evaluados
+            final profilesResponse = await client
+                .from('profiles')
+                .select('id, full_name, role')
+                .filter('id', 'in', userIds);
 
-          final profilesMap = {for (var p in profilesResponse) p['id']: p};
+            final profilesMap = {for (var p in profilesResponse) p['id']: p};
 
-          // Unir profile en cada sesión
-          return sessions.map((session) {
-            final profile = profilesMap[session['user_id']];
-            return {
-              ...session,
-              'profiles': profile,
-            };
-          }).toList();
+            return sessions.map((session) {
+              final profile = profilesMap[session['user_id']];
+              return {
+                ...session,
+                'profiles': profile,
+              };
+            }).toList();
+          } catch (e) {
+            debugPrint('Aviso leyendo perfiles en Realtime: $e');
+            return sessions;
+          }
         });
   }
 

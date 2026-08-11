@@ -96,9 +96,16 @@ class _QuizScreenState extends State<QuizScreen> {
         options: [
           QuizOption(text: "Sí mamá, ya se lo reenvié a todos mis contactos por si acaso.", e: 2),
           QuizOption(text: "No investigué mucho aún, pero lo revisaré en un momento.", v: 2),
-          QuizOption(text: "Mi tío siempre se cree todo lo que ve en WhatsApp, no le hagas caso.", v: 1),
+          QuizOption(text: "Mi tío siempre se cree todo lo que ve, no le hagas caso.", v: 1),
           QuizOption(text: "Le sugiero que verifique en fuentes oficiales antes de enviárselo a sus amigas.", v: 2, c: 2),
         ],
+      ),
+      SceneStep(
+        time: "8:30 a. m.",
+        title: "2. DESAYUNO - La Cocina",
+        imagePath: "assets/images/escena2_cocina2.jpeg",
+        description: "Dialogas con tu mamá.",
+        characterDialog: "Mamá: 'Gracias por tu consejo, ${widget.userName}. Ahora iré a terminar con mis pendientes, ya que estamos planeando un viaje con papá. Hoy saldrás al cine con tus amigos, ¿verdad?'. ¡Qué disfrutes!",
       ),
 
       // ESCENA 3
@@ -106,7 +113,7 @@ class _QuizScreenState extends State<QuizScreen> {
         time: "11:00 a. m.",
         title: "3. REDES SOCIALES - Oferta en tu Feed",
         imagePath: "assets/images/escena3_oferta_audifonos.jpeg",
-        description: "Estás ahorrando para unos audífonos. Luego de buscar reseñas hace unos días, abres tus redes sociales y ves una oferta destacada.",
+        description: "Estás ahorrando para comprar unos audífonos. Luego de buscar reseñas hace unos días, abres tus redes sociales y ves una oferta destacada.",
       ),
       SceneStep(
         time: "11:05 a. m.",
@@ -142,9 +149,9 @@ class _QuizScreenState extends State<QuizScreen> {
         characterDialog: "Amigo: 'Oye, ${widget.userName}, ¡mira lo que hice con IA! La mandaré al grupo de WhatsApp, es un meme muy gracioso.'",
         options: [
           QuizOption(text: "¡Ja, ja! Envíalo al grupo de una vez para reírnos todos.", e: 2),
-          QuizOption(text: "Le pido que no lo comparta, eso le va a incomodar bastante a Sara.", a: 2, c: 3),
-          QuizOption(text: "Le digo que borre la imagen ahora mismo, no está bien usar su rostro así.", a: 2, c: 3),
-          QuizOption(text: "Decido no decir nada, pero tampoco me reiré ni lo compartiré.", a: 1, c: 1),
+          QuizOption(text: "No lo hagas, eso le va a incomodar bastante a Sara.", a: 2, c: 3),
+          QuizOption(text: "Borra esa imagen, no está bien usar su rostro así.", a: 2, c: 3),
+          QuizOption(text: "Ignoraré esa imagen por completo como si nunca lo hubiera visto.", a: 1, c: 1),
         ],
       ),
 
@@ -153,17 +160,17 @@ class _QuizScreenState extends State<QuizScreen> {
         time: "7:30 p. m.",
         title: "5. REGRESO A CASA - La propuesta de Papá",
         imagePath: "assets/images/escena5_papa.jpeg",
-        description: "Regresas a casa de noche. Tu papá te recibe entusiasmado frente a su laptop.",
+        description: "Regresas a casa de noche. Tu papá te recibe algo preocupado.",
       ),
       SceneStep(
         time: "7:35 p. m.",
         title: "5. REGRESO A CASA - Pasajes sospechosos",
         imagePath: "assets/images/escena5_oferta_viaje.jpeg",
-        description: "Te muestra una publicación de Facebook con pasajes de bus al 50% de descuento. Notas fallas ortográficas en la imagen.",
+        description: "Te muestra una publicación que encontré en las redes sociales con pasajes de bus al 30% de descuento. Notas fallas ortográficas en la imagen.",
         characterDialog: "Papá: 'Hola ${widget.userName}, mira esta oferta para el viaje familiar. ¿Compro los pasajes aquí de una vez?'",
         options: [
           QuizOption(text: "Me parece bien papá, si está en redes sociales seguro es una agencia real.", v: 0),
-          QuizOption(text: "Le sugiero buscar opiniones y reclamos de otros usuarios antes de pagar.", v: 3),
+          QuizOption(text: "Hay que buscar opiniones y reclamos de otros usuarios en las redes antes de pagar.", v: 3),
           QuizOption(text: "Voy a revisar si la empresa tiene un sitio web oficial o RUC registrado.", v: 3, a: 1),
           QuizOption(text: "Comparemos los precios directamente en las agencias de transporte conocidas.", v: 2, c: 1),
         ],
