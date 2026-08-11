@@ -75,7 +75,7 @@ class AuthGate extends StatelessWidget {
   }
 }
 
-// Pantalla de Autenticación
+// Pantalla de Autenticación Unificada (Google, Correo e Invitado)
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -87,13 +87,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
+  final _guestNameController = TextEditingController();
+
   bool _isLoading = false;
   bool _isSignUp = false;
+  bool _isGuestMode = false;
 
-  Future<void> _submit() async {
+  Future<void> _submitEmailAuth() async {
     if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor completa los campos requeridos.')),
+        const SnackBar(content: Text('Por favor completa los campos de correo y contraseña.')),
       );
       return;
     }
@@ -106,11 +109,6 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text.trim(),
           _nameController.text.trim().isEmpty ? 'Explorador/a' : _nameController.text.trim(),
         );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Cuenta creada con éxito.')),
-          );
-        }
       } else {
         await SupabaseService.signInWithEmail(
           _emailController.text.trim(),
@@ -120,7 +118,22 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error de autenticación: ${e.toString()}')),
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _submitGuest() async {
+    setState(() => _isLoading = true);
+    try {
+      await SupabaseService.signInAsGuest(_guestNameController.text.trim());
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al ingresar como invitado: ${e.toString()}')),
         );
       }
     } finally {
@@ -135,11 +148,11 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 400),
-            padding: const EdgeInsets.all(24),
+            constraints: const BoxConstraints(maxWidth: 420),
+            padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white10),
             ),
             child: Column(
@@ -147,55 +160,114 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const Text(
                   'MiClick',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
+                  style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  _isSignUp ? 'Crea tu cuenta para comenzar' : 'Inicia sesión en la plataforma :)',
-                  style: const TextStyle(color: Colors.white70),
+                const SizedBox(height: 6),
+                const Text(
+                  'Descubre tu perfil digital de comunicación',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                if (_isSignUp) ...[
+
+                // MODO INVITADO
+                if (_isGuestMode) ...[
                   TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Nombre Completo', border: OutlineInputBorder()),
+                    controller: _guestNameController,
+                    decoration: const InputDecoration(
+                      labelText: '¿Cómo te gustaría que te llamemos?',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.person_outline, color: Color(0xFF38BDF8)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _submitGuest,
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF38BDF8)),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.black)
+                          : const Text('Entrar Directo como Invitado 🚀', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () => setState(() => _isGuestMode = false),
+                    child: const Text('Volver a opciones de cuenta'),
+                  ),
+                ] 
+                // MODO REGISTRO / LOGIN CON CUENTA
+                else ...[
+                  if (_isSignUp) ...[
+                    TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(labelText: 'Nombre Completo', border: OutlineInputBorder()),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Correo Electrónico', border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(labelText: 'Contraseña', border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _submitEmailAuth,
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF38BDF8)),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.black)
+                          : Text(_isSignUp ? 'Registrarse e Ingresar' : 'Iniciar Sesión', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () => SupabaseService.signInWithGoogle(),
+                    icon: const Icon(Icons.g_mobiledata, size: 28),
+                    label: const Text('Continuar con Google'),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
                   ),
                   const SizedBox(height: 16),
-                ],
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Correo Electrónico', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Contraseña', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF38BDF8)),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.black)
-                        : Text(_isSignUp ? 'Registrarse' : 'Ingresar', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  const Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.white24)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text('o', style: TextStyle(color: Colors.white38)),
+                      ),
+                      Expanded(child: Divider(color: Colors.white24)),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () => SupabaseService.signInWithGoogle(),
-                  icon: const Icon(Icons.g_mobiledata, size: 28),
-                  label: const Text('Continuar con Google'),
-                  style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () => setState(() => _isSignUp = !_isSignUp),
-                  child: Text(_isSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'),
-                ),
+                  const SizedBox(height: 16),
+                  // Botón para activar el modo invitado
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: OutlinedButton.icon(
+                      onPressed: () => setState(() => _isGuestMode = true),
+                      icon: const Icon(Icons.bolt, color: Colors.amber),
+                      label: const Text('Ingreso Rápido (Invitado)'),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.amber),
+                        foregroundColor: Colors.amber,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () => setState(() => _isSignUp = !_isSignUp),
+                    child: Text(_isSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate gratis'),
+                  ),
+                ],
               ],
             ),
           ),

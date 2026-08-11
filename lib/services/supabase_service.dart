@@ -1,18 +1,19 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseService {
   static final SupabaseClient client = Supabase.instance.client;
 
   static User? get currentUser => client.auth.currentUser;
 
+  // 1. Iniciar sesión con Google
   static Future<bool> signInWithGoogle() async {
     try {
       return await client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: kIsWeb 
-        ? 'https://miclickapp.netlify.app':
-        'io.supabase.miclick://login-callback',
+        redirectTo: kIsWeb
+            ? 'https://miclickapp.netlify.app'
+            : 'io.supabase.miclick://login-callback',
       );
     } catch (e) {
       debugPrint('Error al iniciar sesión con Google: $e');
@@ -20,6 +21,7 @@ class SupabaseService {
     }
   }
 
+  // 2. Registro e Inicio por Correo (Sin verificación requerida)
   static Future<AuthResponse> signUpWithEmail(String email, String password, String name) async {
     return await client.auth.signUp(
       email: email,
@@ -35,6 +37,15 @@ class SupabaseService {
     );
   }
 
+  // 3. INGRESO RÁPIDO COMO INVITADO (Autenticación Anónima)
+  static Future<AuthResponse> signInAsGuest(String guestName) async {
+    final name = guestName.trim().isEmpty ? 'Invitado/a' : guestName.trim();
+    return await client.auth.signInAnonymously(
+      data: {'full_name': name},
+    );
+  }
+
+  // 4. Guardar resultados del Quiz en Supabase
   static Future<void> saveQuizResult({
     required int scoreV,
     required int scoreE,
@@ -57,6 +68,7 @@ class SupabaseService {
     });
   }
 
+  // 5. Escuchador en Tiempo Real para el Dashboard Admin
   static Stream<List<Map<String, dynamic>>> getRealtimeQuizSessions() {
     return client
         .from('quiz_sessions')
@@ -64,16 +76,34 @@ class SupabaseService {
         .order('completed_at', ascending: false);
   }
 
+  // 6. Obtener Perfil de Usuario con fallback seguro
   static Future<Map<String, dynamic>?> getUserProfile() async {
     final user = currentUser;
     if (user == null) return null;
 
-    final response = await client
-        .from('profiles')
-        .select()
-        .eq('id', user.id)
-        .maybeSingle();
+    try {
+      final response = await client
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
 
-    return response;
+      if (response != null) return response;
+
+      // Si el perfil aún se está creando en la base de datos, retornamos datos temporales
+      final metadata = user.userMetadata ?? {};
+      return {
+        'id': user.id,
+        'full_name': metadata['full_name'] ?? metadata['name'] ?? 'Explorador/a',
+        'role': 'player',
+      };
+    } catch (e) {
+      debugPrint('Error obteniendo perfil: $e');
+      return {
+        'id': user.id,
+        'full_name': 'Explorador/a',
+        'role': 'player',
+      };
+    }
   }
 }
