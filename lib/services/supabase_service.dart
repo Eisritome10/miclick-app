@@ -3,15 +3,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseService {
   static final SupabaseClient client = Supabase.instance.client;
 
-  // 1. Obtener el usuario actual
   static User? get currentUser => client.auth.currentUser;
 
-  // 2. Iniciar sesión con Google (Soporta Web y Android APK)
   static Future<bool> signInWithGoogle() async {
     try {
       return await client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'https://miclickapp.netlify.app', // Tu URL de producción
+        redirectTo: 'https://miclickapp.netlify.app',
       );
     } catch (e) {
       print('Error al iniciar sesión con Google: $e');
@@ -19,7 +17,6 @@ class SupabaseService {
     }
   }
 
-  // 3. Registrar o Iniciar Sesión con Correo / Contraseña
   static Future<AuthResponse> signUpWithEmail(String email, String password, String name) async {
     return await client.auth.signUp(
       email: email,
@@ -35,7 +32,6 @@ class SupabaseService {
     );
   }
 
-  // 4. Guardar los resultados del Quiz al finalizar la historia
   static Future<void> saveQuizResult({
     required int scoreV,
     required int scoreE,
@@ -58,7 +54,6 @@ class SupabaseService {
     });
   }
 
-  // 5. Método para el Dashboard Admin: Escuchar en TIEMPO REAL los registros de los quizzes
   static Stream<List<Map<String, dynamic>>> getRealtimeQuizSessions() {
     return client
         .from('quiz_sessions')
@@ -66,7 +61,6 @@ class SupabaseService {
         .order('completed_at', ascending: false);
   }
 
-  // 6. Obtener el perfil y rol del usuario logueado
   static Future<Map<String, dynamic>?> getUserProfile() async {
     final user = currentUser;
     if (user == null) return null;

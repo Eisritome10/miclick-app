@@ -7,7 +7,7 @@ class AdminDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Fondo Oscuro
+      backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
         title: const Text('Dashboard MiClick - Control en Tiempo Real'),
         backgroundColor: const Color(0xFF1E293B),
@@ -53,7 +53,6 @@ class AdminDashboardScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Tarjeta de resumen de métricas
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -79,7 +78,6 @@ class AdminDashboardScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Lista en tiempo real de registros
                 Expanded(
                   child: ListView.builder(
                     itemCount: sessions.length,

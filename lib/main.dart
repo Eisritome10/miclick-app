@@ -7,8 +7,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: 'https://yncojnimqcgyxwfdkfoo.supabase.co', // Reemplaza con tu Project URL
-    anonKey: 'sb_publishable_VGoNmLEsyiPKQeLkdbs67w_m8UCinJ3',          // Reemplaza con tu Anon Key
+    url: 'https://yncojnimqcgyxwfdkfoo.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluY29qbmltcWNneXh3ZmRrZm9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzIyMDUsImV4cCI6MjEwMTk0ODIwNX0.9FZ0eEp2CrFf51nW0XP3CS3nce3o-0tsphrj3G9LTn4', // Revisa que esta sea la 'anon public' key
   );
 
   runApp(const MiClickApp());
@@ -74,7 +74,6 @@ class AuthGate extends StatelessWidget {
   }
 }
 
-// Pantalla de Autenticación (Login / Registro)
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -90,6 +89,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isSignUp = false;
 
   Future<void> _submit() async {
+    if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor completa los campos requeridos.')),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       if (_isSignUp) {
@@ -112,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          SnackBar(content: Text('Error de autenticación: ${e.toString()}')),
         );
       }
     } finally {
@@ -197,7 +203,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Pantalla Principal del Jugador
 class HomeScreen extends StatelessWidget {
   final String userName;
   const HomeScreen({super.key, required this.userName});
@@ -235,7 +240,10 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: () {
-                  // Aquí conectas hacia tu pantalla del quiz interactivo
+                  // Conexión futura a la vista interactiva del Quiz
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cargando aventura interactiva...')),
+                  );
                 },
                 icon: const Icon(Icons.play_arrow),
                 label: const Text('Comenzar la Aventura'),
