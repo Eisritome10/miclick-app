@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'services/supabase_service.dart';
 import 'screens/admin_dashboard_screen.dart';
+import 'screens/quiz_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
     url: 'https://yncojnimqcgyxwfdkfoo.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluY29qbmltcWNneXh3ZmRrZm9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzIyMDUsImV4cCI6MjEwMTk0ODIwNX0.9FZ0eEp2CrFf51nW0XP3CS3nce3o-0tsphrj3G9LTn4', // Revisa que esta sea la 'anon public' key
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluY29qbmltcWNneXh3ZmRrZm9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzIyMDUsImV4cCI6MjEwMTk0ODIwNX0.9FZ0eEp2CrFf51nW0XP3CS3nce3o-0tsphrj3G9LTn4',
   );
 
   runApp(const MiClickApp());
@@ -74,6 +75,7 @@ class AuthGate extends StatelessWidget {
   }
 }
 
+// Pantalla de Autenticación
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -203,6 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+// Pantalla Principal del Jugador
 class HomeScreen extends StatelessWidget {
   final String userName;
   const HomeScreen({super.key, required this.userName});
@@ -213,6 +216,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('MiClick - Menú Principal'),
         backgroundColor: const Color(0xFF1E293B),
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -223,37 +227,59 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '¡Bienvenido/a, $userName! 👋',
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Tus decisiones de hoy determinarán tu perfil de comunicación y pensamiento crítico en el entorno digital.',
-                style: TextStyle(fontSize: 16, color: Colors.white70),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // Conexión futura a la vista interactiva del Quiz
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cargando aventura interactiva...')),
-                  );
-                },
-                icon: const Icon(Icons.play_arrow),
-                label: const Text('Comenzar la Aventura'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF38BDF8),
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 600),
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Color(0xFF38BDF8),
+                  child: Icon(Icons.person, size: 48, color: Colors.black),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                Text(
+                  '¡Bienvenido/a, $userName! 👋',
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  '¿Cómo actuarías en un día normal frente al celular?\n\n'
+                  'Acompaña a "X" en su jornada diaria. Cada decisión que tomes ante mensajes, redes sociales e Inteligencia Artificial calculará tu perfil de Alfabetización Mediática e Informacional (MIL).',
+                  style: TextStyle(fontSize: 15, color: Colors.white70, height: 1.5),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => QuizScreen(userName: userName),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.play_arrow, size: 28),
+                    label: const Text('Comenzar la Historia', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF38BDF8),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
