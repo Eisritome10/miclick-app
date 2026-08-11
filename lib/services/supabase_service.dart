@@ -21,7 +21,7 @@ class SupabaseService {
     }
   }
 
-  // 2. Registro e Inicio por Correo (Sin verificación requerida)
+  // 2. Registro e Inicio por Correo
   static Future<AuthResponse> signUpWithEmail(String email, String password, String name) async {
     return await client.auth.signUp(
       email: email,
@@ -37,7 +37,7 @@ class SupabaseService {
     );
   }
 
-  // 3. INGRESO RÁPIDO COMO INVITADO (Autenticación Anónima)
+  // 3. Ingreso Rápido como Invitado (Anónimo)
   static Future<AuthResponse> signInAsGuest(String guestName) async {
     final name = guestName.trim().isEmpty ? 'Invitado/a' : guestName.trim();
     return await client.auth.signInAnonymously(
@@ -45,7 +45,7 @@ class SupabaseService {
     );
   }
 
-  // 4. Guardar resultados del Quiz en Supabase
+  // 4. Guardar resultados del Quiz
   static Future<void> saveQuizResult({
     required int scoreV,
     required int scoreE,
@@ -55,7 +55,7 @@ class SupabaseService {
     int? completionTimeSeconds,
   }) async {
     final user = currentUser;
-    if (user == null) throw Exception('Usuario no autenticado');
+    if (user == null) return;
 
     await client.from('quiz_sessions').insert({
       'user_id': user.id,
@@ -76,10 +76,12 @@ class SupabaseService {
         .order('completed_at', ascending: false);
   }
 
-  // 6. Obtener Perfil de Usuario con fallback seguro
-  static Future<Map<String, dynamic>?> getUserProfile() async {
+  // 6. Obtener Perfil y Foto con Manejo Robusto de Errores
+  static Future<Map<String, dynamic>> getUserProfile() async {
     final user = currentUser;
-    if (user == null) return null;
+    if (user == null) {
+      return {'full_name': 'Explorador/a', 'avatar_url': null, 'role': 'player'};
+    }
 
     try {
       final response = await client
@@ -88,22 +90,25 @@ class SupabaseService {
           .eq('id', user.id)
           .maybeSingle();
 
-      if (response != null) return response;
-
-      // Si el perfil aún se está creando en la base de datos, retornamos datos temporales
-      final metadata = user.userMetadata ?? {};
-      return {
-        'id': user.id,
-        'full_name': metadata['full_name'] ?? metadata['name'] ?? 'Explorador/a',
-        'role': 'player',
-      };
+      if (response != null) {
+        return {
+          'id': user.id,
+          'full_name': response['full_name'] ?? user.userMetadata?['full_name'] ?? user.userMetadata?['name'] ?? 'Explorador/a',
+          'avatar_url': response['avatar_url'] ?? user.userMetadata?['avatar_url'] ?? user.userMetadata?['picture'],
+          'role': response['role'] ?? 'player',
+        };
+      }
     } catch (e) {
-      debugPrint('Error obteniendo perfil: $e');
-      return {
-        'id': user.id,
-        'full_name': 'Explorador/a',
-        'role': 'player',
-      };
+      debugPrint('Aviso obteniendo tabla profiles: $e');
     }
+
+    // Fallback directo desde Auth Metadata
+    final meta = user.userMetadata ?? {};
+    return {
+      'id': user.id,
+      'full_name': meta['full_name'] ?? meta['name'] ?? (user.isAnonymous ? 'Invitado/a' : 'Explorador/a'),
+      'avatar_url': meta['avatar_url'] ?? meta['picture'],
+      'role': 'player',
+    };
   }
 }

@@ -52,7 +52,7 @@ class AuthGate extends StatelessWidget {
           return const LoginScreen();
         }
 
-        return FutureBuilder<Map<String, dynamic>?>(
+        return FutureBuilder<Map<String, dynamic>>(
           future: SupabaseService.getUserProfile(),
           builder: (context, profileSnapshot) {
             if (profileSnapshot.connectionState == ConnectionState.waiting) {
@@ -61,13 +61,16 @@ class AuthGate extends StatelessWidget {
               );
             }
 
-            final profile = profileSnapshot.data;
-            final role = profile?['role'] ?? 'player';
+            final profile = profileSnapshot.data ?? {'full_name': 'Explorador/a', 'role': 'player'};
+            final role = profile['role'] ?? 'player';
 
             if (role == 'admin') {
               return const AdminDashboardScreen();
             } else {
-              return HomeScreen(userName: profile?['full_name'] ?? 'Explorador/a');
+              return HomeScreen(
+                userName: profile['full_name'] ?? 'Explorador/a',
+                avatarUrl: profile['avatar_url'],
+              );
             }
           },
         );
@@ -249,7 +252,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // Botón para activar el modo invitado
                   SizedBox(
                     width: double.infinity,
                     height: 44,
@@ -281,7 +283,13 @@ class _LoginScreenState extends State<LoginScreen> {
 // Pantalla Principal del Jugador
 class HomeScreen extends StatefulWidget {
   final String userName;
-  const HomeScreen({super.key, required this.userName});
+  final String? avatarUrl;
+
+  const HomeScreen({
+    super.key,
+    required this.userName,
+    this.avatarUrl,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -293,18 +301,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Carga del video en bucle
     _videoController = VideoPlayerController.asset('assets/videos/menu_bg.mp4')
       ..initialize().then((_) {
         setState(() {});
-        _videoController.setLooping(true); // Bucle infinito de 1 segundo
-        _videoController.play();           // Reproducción automática
+        _videoController.setLooping(true);
+        _videoController.play();
       });
   }
 
   @override
   void dispose() {
-    _videoController.dispose(); // Liberar memoria
+    _videoController.dispose();
     super.dispose();
   }
 
@@ -326,11 +333,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             )
           else
-            Container(color: Color(0xFF0F172A)),
+            Container(color: const Color(0xFF0F172A)),
 
-          // 2. CAPA OSCURA SEMITRANSPARENTE (Overlay para visibilidad)
+          // 2. CAPA OSCURA SEMITRANSPARENTE
           Container(
-            color: Colors.black.withValues(alpha: 0.55),
+            color: Colors.black.withOpacity(0.55),
           ),
 
           // 3. CONTENIDO DEL MENÚ PRINCIPAL
@@ -355,17 +362,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     constraints: const BoxConstraints(maxWidth: 550),
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B).withOpacity(0.9), // Fondo elegante
+                      color: const Color(0xFF1E293B).withOpacity(0.9),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white10),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const CircleAvatar(
-                          radius: 36,
-                          backgroundColor: Color(0xFF38BDF8),
-                          child: Icon(Icons.person, size: 42, color: Colors.black),
+                        // AVATAR DEL USUARIO (Foto de Google o icono por defecto)
+                        CircleAvatar(
+                          radius: 42,
+                          backgroundColor: const Color(0xFF38BDF8),
+                          backgroundImage: widget.avatarUrl != null ? NetworkImage(widget.avatarUrl!) : null,
+                          child: widget.avatarUrl == null
+                              ? const Icon(Icons.person, size: 48, color: Colors.black)
+                              : null,
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -375,7 +386,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 14),
                         const Text(
-                          'Acompaña a "X" en su jornada diaria. Cada decisión ante mensajes, redes e Inteligencia Artificial calculará tu perfil MIL.',
+                          'Hoy serás el protagonista de la historia. Vive tus decisiones digitales cotidianas frente al celular.\n\n'
+                          'Cada decisión ante mensajes, redes sociales e Inteligencia Artificial calculará tu perfil de Alfabetización Mediática e Informacional (MIL).',
                           style: TextStyle(fontSize: 14, color: Colors.white70, height: 1.4),
                           textAlign: TextAlign.center,
                         ),
@@ -393,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             },
                             icon: const Icon(Icons.play_arrow, size: 28),
-                            label: const Text('Comenzar la Historia', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                            label: const Text('Comenzar Mi Historia', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF38BDF8),
                               foregroundColor: Colors.black,
