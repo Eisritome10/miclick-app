@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart';
 
 class SupabaseService {
   static final SupabaseClient client = Supabase.instance.client;
@@ -9,10 +10,12 @@ class SupabaseService {
     try {
       return await client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'https://miclickapp.netlify.app',
+        redirectTo: kIsWeb 
+        ? 'https://miclickapp.netlify.app':
+        'io.supabase.miclick://login-callback',
       );
     } catch (e) {
-      print('Error al iniciar sesión con Google: $e');
+      debugPrint('Error al iniciar sesión con Google: $e');
       return false;
     }
   }
