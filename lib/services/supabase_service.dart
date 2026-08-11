@@ -158,4 +158,12 @@ class SupabaseService {
       'role': 'player',
     };
   }
+
+  // Borrar un registro de quiz por su ID (Solo Admin)
+  static Future<void> deleteQuizSession(String sessionId) async {
+    await client
+        .from('quiz_sessions')
+        .delete()
+        .eq('id', sessionId);
+  }
 }

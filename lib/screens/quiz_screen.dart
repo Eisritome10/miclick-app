@@ -4,10 +4,10 @@ import '../services/supabase_service.dart';
 
 class QuizOption {
   final String text;
-  final int v;
-  final int e;
-  final int a;
-  final int c;
+  final int v; // Verificación (0 a 3)
+  final int e; // Impulso Emocional (0 a 3)
+  final int a; // Conciencia Algorítmica/IA (0 a 3)
+  final int c; // Creación Responsable/Empatía (0 a 3)
 
   QuizOption({
     required this.text,
@@ -54,7 +54,9 @@ class _QuizScreenState extends State<QuizScreen> {
 
   List<SceneStep> _getSteps() {
     return [
-      // ESCENA 1
+      // ==========================================
+      // ESCENA GENERAL 1: EL DESPERTAR Y EL MENSAJE
+      // ==========================================
       SceneStep(
         time: "8:00 a. m.",
         title: "1. DESPERTAR - Abriendo los ojos",
@@ -73,14 +75,16 @@ class _QuizScreenState extends State<QuizScreen> {
         imagePath: "assets/images/escena1_mensaje_tio.jpeg",
         description: "Tomas tu celular y ves una captura enviada por tu tío a toda la familia alertando sobre un supuesto corte de agua potable.",
         options: [
-          QuizOption(text: "Reenviar la imagen a otros grupos de inmediato para que todos estén precavidos.", e: 3),
-          QuizOption(text: "Buscar en internet si las autoridades confirmaron el corte de agua antes de enviar nada.", v: 3),
-          QuizOption(text: "Escribirle a mi tío por privado para preguntarle de dónde sacó esa imagen.", v: 2, c: 1),
-          QuizOption(text: "Ignorar la notificación y dejar el celular a un lado.", v: 1),
+          QuizOption(text: "Reenviar la imagen a otros grupos de inmediato para que todos estén precavidos.", e: 3, v: 0, a: 0, c: 0),
+          QuizOption(text: "Buscar en internet si las autoridades confirmaron el corte de agua antes de enviar nada.", v: 3, e: 0, a: 1, c: 1),
+          QuizOption(text: "Escribirle a mi tío por privado para preguntarle de dónde sacó esa imagen.", v: 2, c: 2, e: 0, a: 0),
+          QuizOption(text: "Ignorar la notificación y dejar el celular a un lado.", v: 1, e: 0, a: 0, c: 0),
         ],
       ),
 
-      // ESCENA 2
+      // ==========================================
+      // ESCENA GENERAL 2: DESAYUNO Y DIÁLOGOS
+      // ==========================================
       SceneStep(
         time: "8:20 a. m.",
         title: "2. DESAYUNO - La Cocina",
@@ -91,24 +95,26 @@ class _QuizScreenState extends State<QuizScreen> {
         time: "8:22 a. m.",
         title: "2. DESAYUNO - Conversación con Mamá",
         imagePath: "assets/images/escena2_mama_hablando.jpeg",
-        description: "Tu mamá te mira preocupada esperando tu respuesta.",
         characterDialog: "Mamá: 'Buenos días, ${widget.userName}. ¿Viste la alerta urgente que envió tu tío sobre el agua?'",
+        description: "Tu mamá te mira preocupada esperando tu respuesta.",
         options: [
-          QuizOption(text: "Sí mamá, ya se lo reenvié a todos mis contactos por si acaso.", e: 2),
-          QuizOption(text: "No investigué mucho aún, pero lo revisaré en un momento.", v: 2),
-          QuizOption(text: "Mi tío siempre se cree todo lo que ve, no le hagas caso.", v: 1),
-          QuizOption(text: "Le sugiero que verifique en fuentes oficiales antes de enviárselo a sus amigas.", v: 2, c: 2),
+          QuizOption(text: "Sí mamá, ya se lo reenvié a todos mis contactos por si acaso.", e: 3, v: 0, a: 0, c: 0),
+          QuizOption(text: "No investigué mucho aún, pero lo revisaré en un momento.", v: 2, e: 1, a: 0, c: 0),
+          QuizOption(text: "Mi tío siempre se cree todo lo que ve, no le hagas caso.", v: 1, e: 1, a: 0, c: 0),
+          QuizOption(text: "Le sugiero que verifique en fuentes oficiales antes de enviárselo a sus amigas.", v: 3, c: 3, e: 0, a: 1),
         ],
       ),
       SceneStep(
         time: "8:30 a. m.",
         title: "2. DESAYUNO - La Cocina",
         imagePath: "assets/images/escena2_cocina2.jpeg",
-        description: "Dialogas con tu mamá.",
-        characterDialog: "Mamá: 'Gracias por tu consejo, ${widget.userName}. Ahora iré a terminar con mis pendientes, ya que estamos planeando un viaje con papá. Hoy saldrás al cine con tus amigos, ¿verdad?'. ¡Qué disfrutes!",
+        description: "Dialogas con tu mamá y ella te agradece por tu recomendación.",
+        characterDialog: "Mamá: 'Gracias por tu consejo, ${widget.userName}. Ahora iré a terminar con mis pendientes, ya que estamos planeando un viaje con papá. Hoy saldrás al cine con tus amigos, ¿verdad? ¡Que disfrutes!'",
       ),
 
-      // ESCENA 3
+      // ==========================================
+      // ESCENA GENERAL 3: REDES SOCIALES Y AUDÍFONOS
+      // ==========================================
       SceneStep(
         time: "11:00 a. m.",
         title: "3. REDES SOCIALES - Oferta en tu Feed",
@@ -121,20 +127,22 @@ class _QuizScreenState extends State<QuizScreen> {
         imagePath: "assets/images/escena3_resenas_audifonos.jpeg",
         description: "Deslizas la pantalla y te aparecen dos publicaciones distintas con opiniones sobre diferentes marcas de audífonos.",
         options: [
-          QuizOption(text: "¡Aprovecharé esta oferta y los compraré de una vez!", e: 2),
-          QuizOption(text: "Siento que el algoritmo sabe exactamente lo que necesito comprar.", v: 1, e: 1, a: 1),
-          QuizOption(text: "Imagino que me aparecen porque estuve buscando audífonos previamente.", v: 1, a: 2, c: 1),
-          QuizOption(text: "Voy a comparar qué precios y reseñas les aparecen a mis amigos.", v: 2, a: 2, c: 1),
+          QuizOption(text: "¡Aprovecharé esta oferta y los compraré de una vez!", e: 3, v: 0, a: 0, c: 0),
+          QuizOption(text: "Siento que el algoritmo sabe exactamente lo que necesito comprar.", v: 1, e: 2, a: 1, c: 0),
+          QuizOption(text: "Imagino que me aparecen porque estuve buscando audífonos previamente.", v: 2, a: 3, c: 1, e: 0),
+          QuizOption(text: "Voy a comparar qué precios y reseñas les aparecen a mis amigos.", v: 3, a: 2, c: 2, e: 0),
         ],
       ),
       SceneStep(
         time: "11:15 a. m.",
         title: "3. REDES SOCIALES - Recordatorio de Salida",
         imagePath: "assets/images/escena3_oferta_cine.jpeg",
-        description: "Sigues deslizando la red social y te cruzas con un anuncio de promoción 3x2 en cine. Te recuerdas que hoy quedaste en ir al cine con tus amigos.",
+        description: "Sigues deslizando la red social y te cruzas con un anuncio de promoción 3x2 en el cine. Recuerdas que hoy quedaste en ir al cine con tus amigos.",
       ),
 
-      // ESCENA 4
+      // ==========================================
+      // ESCENA GENERAL 4: EL CINE Y EL DEEPFAKE
+      // ==========================================
       SceneStep(
         time: "4:30 p. m.",
         title: "4. CINE - Salida con amigos",
@@ -146,16 +154,18 @@ class _QuizScreenState extends State<QuizScreen> {
         title: "4. CINE - La imagen editada con IA",
         imagePath: "assets/images/escena4_deepfake.jpeg",
         description: "Tu amigo te muestra una foto donde usó Inteligencia Artificial para alterar el rostro de Sara en una escena comprometedora de la película.",
-        characterDialog: "Amigo: 'Oye, ${widget.userName}, ¡mira lo que hice con IA! La mandaré al grupo de WhatsApp, es un meme muy gracioso.'",
+        characterDialog: "Amigo: 'Oye, ${widget.userName}, ¡mira lo que hice con IA! La mandaré al chat grupal, es un meme muy gracioso.'",
         options: [
-          QuizOption(text: "¡Ja, ja! Envíalo al grupo de una vez para reírnos todos.", e: 2),
-          QuizOption(text: "No lo hagas, eso le va a incomodar bastante a Sara.", a: 2, c: 3),
-          QuizOption(text: "Borra esa imagen, no está bien usar su rostro así.", a: 2, c: 3),
-          QuizOption(text: "Ignoraré esa imagen por completo como si nunca lo hubiera visto.", a: 1, c: 1),
+          QuizOption(text: "¡Ja, ja! Envíalo al grupo de una vez para reírnos todos.", e: 3, a: 0, c: 0, v: 0),
+          QuizOption(text: "No lo hagas, eso le va a incomodar bastante a Sara.", a: 2, c: 3, e: 0, v: 0),
+          QuizOption(text: "Borra esa imagen, no está bien usar su rostro así.", a: 3, c: 3, e: 0, v: 1),
+          QuizOption(text: "Ignoraré esa imagen por completo como si nunca lo hubiera visto.", a: 1, c: 1, e: 0, v: 0),
         ],
       ),
 
-      // ESCENA 5
+      // ==========================================
+      // ESCENA GENERAL 5: REGRESO A CASA Y VIAJE
+      // ==========================================
       SceneStep(
         time: "7:30 p. m.",
         title: "5. REGRESO A CASA - La propuesta de Papá",
@@ -166,17 +176,19 @@ class _QuizScreenState extends State<QuizScreen> {
         time: "7:35 p. m.",
         title: "5. REGRESO A CASA - Pasajes sospechosos",
         imagePath: "assets/images/escena5_oferta_viaje.jpeg",
-        description: "Te muestra una publicación que encontré en las redes sociales con pasajes de bus al 30% de descuento. Notas fallas ortográficas en la imagen.",
+        description: "Te muestra una publicación que encontró en las redes sociales con pasajes de bus al 30% de descuento. Notas fallas ortográficas en la imagen.",
         characterDialog: "Papá: 'Hola ${widget.userName}, mira esta oferta para el viaje familiar. ¿Compro los pasajes aquí de una vez?'",
         options: [
-          QuizOption(text: "Me parece bien papá, si está en redes sociales seguro es una agencia real.", v: 0),
-          QuizOption(text: "Hay que buscar opiniones y reclamos de otros usuarios en las redes antes de pagar.", v: 3),
-          QuizOption(text: "Voy a revisar si la empresa tiene un sitio web oficial o RUC registrado.", v: 3, a: 1),
-          QuizOption(text: "Comparemos los precios directamente en las agencias de transporte conocidas.", v: 2, c: 1),
+          QuizOption(text: "Me parece bien papá, si está en redes sociales seguro es una agencia real.", v: 0, e: 2, a: 0, c: 0),
+          QuizOption(text: "Hay que buscar opiniones y reclamos de otros usuarios en las redes antes de pagar.", v: 3, a: 1, c: 1, e: 0),
+          QuizOption(text: "Voy a revisar si la empresa tiene un sitio web oficial o RUC registrado.", v: 3, a: 3, c: 1, e: 0),
+          QuizOption(text: "Comparemos los precios directamente en las agencias de transporte conocidas.", v: 2, c: 2, a: 1, e: 0),
         ],
       ),
 
-      // ESCENA 6
+      // ==========================================
+      // ESCENA GENERAL 6: NOCHE Y COMUNICADO DE SISMO
+      // ==========================================
       SceneStep(
         time: "11:45 p. m.",
         title: "6. NOCHE - El temblor",
@@ -195,10 +207,10 @@ class _QuizScreenState extends State<QuizScreen> {
         imagePath: "assets/images/escena6_alerta_sismo.jpeg",
         description: "Tomas tu teléfono por susto y ves una imagen circulando en redes con el logo de un organismo estatal sobre una réplica inminente.",
         options: [
-          QuizOption(text: "Salgo corriendo a la calle inmediatamente sin dudarlo.", e: 3),
-          QuizOption(text: "Verifico en la cuenta oficial verificada del instituto sismológico.", v: 3),
-          QuizOption(text: "Aviso a mi familia con calma para revisar si el comunicado es oficial.", v: 2, e: 1, c: 2),
-          QuizOption(text: "Lo ignoro por completo y trato de volver a dormir.", v: 0),
+          QuizOption(text: "Salgo corriendo a la calle inmediatamente sin dudarlo.", e: 3, v: 0, a: 0, c: 0),
+          QuizOption(text: "Verifico en la cuenta oficial verificada del instituto sismológico.", v: 3, e: 0, a: 1, c: 1),
+          QuizOption(text: "Aviso a mi familia con calma para revisar si el comunicado es oficial.", v: 2, c: 3, e: 1, a: 1),
+          QuizOption(text: "Lo ignoro por completo y trato de volver a dormir.", v: 0, e: 0, a: 0, c: 0),
         ],
       ),
       SceneStep(
@@ -237,20 +249,32 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
+  // ALGORITMO NORMALIZADO CON UMBRALES COHERENTES (0 - 18 PTS)
   void _finishQuiz() {
     String profile = "Reactivo/a";
 
-    if (_scoreC <= 4 && _scoreE >= 9) {
+    // 1. Amplificador/a: Baja Empatía (<=4) y Muy Alto Impulso Emocional (>=12)
+    if (_scoreC <= 4 && _scoreE >= 12) {
       profile = "Amplificador/a";
-    } else if (_scoreA <= 1) {
+    } 
+    // 2. Ingenuo/a Digital: Nula o baja conciencia algorítmica/IA (<=2)
+    else if (_scoreA <= 2) {
       profile = "Ingenuo/a Digital";
-    } else if (_scoreE >= 9 && _scoreV <= 7) {
+    } 
+    // 3. Reactivo/a: Alto impulso emocional (>=12) y baja verificación (<=9)
+    else if (_scoreE >= 12 && _scoreV <= 9) {
       profile = "Reactivo/a";
-    } else if (_scoreV >= 11 && _scoreA <= 1) {
+    } 
+    // 4. Confirmador/a: Buena verificación (>=12) pero atrapado en sesgo/sin IA (<=2)
+    else if (_scoreV >= 12 && _scoreA <= 2) {
       profile = "Confirmador/a";
-    } else if (_scoreV >= 11 && _scoreC >= 7 && _scoreE <= 6) {
+    } 
+    // 5. Empático/a Crítico/a: Alta Verificación (>=12), Alta Empatía (>=10) y Bajo Impulso (<=8)
+    else if (_scoreV >= 12 && _scoreC >= 10 && _scoreE <= 8) {
       profile = "Empático/a Crítico/a";
-    } else if (_scoreV >= 11) {
+    } 
+    // 6. Investigador/a: Alta capacidad comprobada de Verificación (>=12)
+    else if (_scoreV >= 12) {
       profile = "Investigador/a";
     }
 
@@ -262,7 +286,6 @@ class _QuizScreenState extends State<QuizScreen> {
       finalProfile: profile,
     );
 
-    // Redirección a la Pantalla de Análisis de 3 Segundos con Video
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -433,7 +456,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 }
 
-// PANTALLA INTERMEDIA DE CARGA / ANÁLISIS DE RESULTADOS (3s con Video)
+// PANTALLA INTERMEDIA DE CARGA / ANÁLISIS DE RESULTADOS
 class AnalyzingScreen extends StatefulWidget {
   final String profile;
   final int scoreV;

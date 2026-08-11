@@ -4,7 +4,6 @@ import '../services/supabase_service.dart';
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
 
-  // Color de etiqueta según el perfil
   Color _getProfileColor(String profile) {
     switch (profile) {
       case 'Investigador/a':
@@ -20,6 +19,80 @@ class AdminDashboardScreen extends StatelessWidget {
       default:
         return Colors.purpleAccent; // Reactivo/a
     }
+  }
+
+  // Formatear la fecha y hora completa en español
+  String _formatDateTime(String? dateIsoString) {
+    if (dateIsoString == null) return 'Hoy';
+    try {
+      final dateTime = DateTime.parse(dateIsoString).toLocal();
+      final day = dateTime.day.toString().padLeft(2, '0');
+      final month = dateTime.month.toString().padLeft(2, '0');
+      final year = dateTime.year;
+      final hour = dateTime.hour.toString().padLeft(2, '0');
+      final minute = dateTime.minute.toString().padLeft(2, '0');
+      return '$day/$month/$year - $hour:$minute';
+    } catch (_) {
+      return dateIsoString;
+    }
+  }
+
+  // Diálogo de confirmación para eliminar un quiz
+  void _confirmDelete(BuildContext context, String sessionId, String userName) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
+            SizedBox(width: 10),
+            Text('¿Eliminar evaluación?', style: TextStyle(color: Colors.white, fontSize: 18)),
+          ],
+        ),
+        content: Text(
+          '¿Estás seguro de que deseas eliminar permanentemente el registro del quiz de "$userName"? Esta acción no se puede deshacer.',
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.white60)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              try {
+                await SupabaseService.deleteQuizSession(sessionId);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Registro eliminado con éxito.'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error al eliminar: $e'),
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Sí, eliminar'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -95,7 +168,7 @@ class AdminDashboardScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // PANEL DE TARJETAS DE MÉTRICAS (KPIs)
+                // PANEL DE TARJETAS DE MÉTRICAS
                 LayoutBuilder(
                   builder: (context, constraints) {
                     return Wrap(
@@ -152,20 +225,18 @@ class AdminDashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
 
-                // LISTA EN TIEMPO REAL DE USUARIOS Y SUS RESULTADOS MIL
+                // LISTA DE EVALUACIONES CON FECHA/HORA Y BOTÓN DE BORRADO
                 Expanded(
                   child: ListView.builder(
                     itemCount: sessions.length,
                     itemBuilder: (context, index) {
                       final session = sessions[index];
+                      final sessionId = session['id'].toString();
                       final profilesTable = session['profiles'] as Map<String, dynamic>?;
                       final userName = profilesTable?['full_name'] ?? 'Usuario / Invitado';
                       final profileName = session['final_profile'] ?? 'Reactivo/a';
                       final profileColor = _getProfileColor(profileName);
-
-                      final dateStr = session['completed_at'] != null
-                          ? session['completed_at'].toString().substring(0, 10)
-                          : 'Hoy';
+                      final formattedDate = _formatDateTime(session['completed_at']?.toString());
 
                       return Card(
                         color: const Color(0xFF1E293B),
@@ -182,15 +253,18 @@ class AdminDashboardScreen extends StatelessWidget {
                           ),
                           title: Row(
                             children: [
-                              Text(
-                                userName,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                              Expanded(
+                                child: Text(
+                                  userName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
@@ -207,14 +281,31 @@ class AdminDashboardScreen extends StatelessWidget {
                           ),
                           subtitle: Padding(
                             padding: const EdgeInsets.only(top: 6.0),
-                            child: Text(
-                              'Ejes MIL ➔ Verificación: ${session['score_v']} | Emoción: ${session['score_e']} | IA/Algoritmo: ${session['score_a']} | Creación: ${session['score_c']}',
-                              style: const TextStyle(color: Colors.white70, fontSize: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Ejes MIL ➔ Verificación: ${session['score_v']} | Emoción: ${session['score_e']} | IA: ${session['score_a']} | Creación: ${session['score_c']}',
+                                  style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.access_time, size: 13, color: Color(0xFF38BDF8)),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      formattedDate,
+                                      style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 12, fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          trailing: Text(
-                            dateStr,
-                            style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 12),
+                          trailing: IconButton(
+                            tooltip: 'Eliminar Registro',
+                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                            onPressed: () => _confirmDelete(context, sessionId, userName),
                           ),
                         ),
                       );
