@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:video_player/video_player.dart';
 import 'services/supabase_service.dart';
 import 'screens/admin_dashboard_screen.dart';
 import 'screens/quiz_screen.dart';
@@ -278,82 +279,136 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 // Pantalla Principal del Jugador
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String userName;
   const HomeScreen({super.key, required this.userName});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late VideoPlayerController _videoController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Carga del video en bucle
+    _videoController = VideoPlayerController.asset('assets/videos/menu_bg.mp4')
+      ..initialize().then((_) {
+        setState(() {});
+        _videoController.setLooping(true); // Bucle infinito de 1 segundo
+        _videoController.play();           // Reproducción automática
+      });
+  }
+
+  @override
+  void dispose() {
+    _videoController.dispose(); // Liberar memoria
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('MiClick - Menú Principal'),
-        backgroundColor: const Color(0xFF1E293B),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async => await SupabaseService.client.auth.signOut(),
+      body: Stack(
+        children: [
+          // 1. VIDEO EN BUCLE DE FONDO
+          if (_videoController.value.isInitialized)
+            SizedBox.expand(
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: SizedBox(
+                  width: _videoController.value.size.width,
+                  height: _videoController.value.size.height,
+                  child: VideoPlayer(_videoController),
+                ),
+              ),
+            )
+          else
+            Container(color: Color(0xFF0F172A)),
+
+          // 2. CAPA OSCURA SEMITRANSPARENTE (Overlay para visibilidad)
+          Container(
+            color: Colors.black.withValues(alpha: 0.55),
           ),
-        ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 600),
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white10),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Color(0xFF38BDF8),
-                  child: Icon(Icons.person, size: 48, color: Colors.black),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  '¡Bienvenido/a, $userName! 👋',
-                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  '¿Cómo actuarías en un día normal frente al celular?\n\n'
-                  'Acompaña a "X" en su jornada diaria. Cada decisión que tomes ante mensajes, redes sociales e Inteligencia Artificial calculará tu perfil de Alfabetización Mediática e Informacional (MIL).',
-                  style: TextStyle(fontSize: 15, color: Colors.white70, height: 1.5),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => QuizScreen(userName: userName),
+
+          // 3. CONTENIDO DEL MENÚ PRINCIPAL
+          SafeArea(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                title: const Text('MiClick - Menú Principal'),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    onPressed: () async => await SupabaseService.client.auth.signOut(),
+                  ),
+                ],
+              ),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 550),
+                    padding: const EdgeInsets.all(32),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E293B).withOpacity(0.9), // Fondo elegante
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white10),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircleAvatar(
+                          radius: 36,
+                          backgroundColor: Color(0xFF38BDF8),
+                          child: Icon(Icons.person, size: 42, color: Colors.black),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.play_arrow, size: 28),
-                    label: const Text('Comenzar la Historia', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF38BDF8),
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        const SizedBox(height: 16),
+                        Text(
+                          '¡Bienvenido/a, ${widget.userName}! 👋',
+                          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 14),
+                        const Text(
+                          'Acompaña a "X" en su jornada diaria. Cada decisión ante mensajes, redes e Inteligencia Artificial calculará tu perfil MIL.',
+                          style: TextStyle(fontSize: 14, color: Colors.white70, height: 1.4),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 28),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => QuizScreen(userName: widget.userName),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.play_arrow, size: 28),
+                            label: const Text('Comenzar la Historia', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF38BDF8),
+                              foregroundColor: Colors.black,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

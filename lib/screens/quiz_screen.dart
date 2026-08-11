@@ -21,12 +21,14 @@ class QuizScene {
   final String time;
   final String title;
   final String description;
+  final String imagePath;
   final List<QuizOption> options;
 
   QuizScene({
     required this.time,
     required this.title,
     required this.description,
+    required this.imagePath,
     required this.options,
   });
 }
@@ -60,6 +62,7 @@ class _QuizScreenState extends State<QuizScreen> {
             "Es un mensaje de tu TÍO:\n"
             "🚨 URGENTE: Se cortará el agua potable en toda la ciudad por tres días desde mañana. Difunde esta información.\n\n"
             "¿Cómo reaccionas?",
+        imagePath: "assets/images/escena1.jpeg",
         options: [
           QuizOption(text: "Reenviar a otros grupos para que otros se enteren.", e: 3),
           QuizOption(text: "Buscar en internet antes de reenviarlo.", v: 3),
@@ -76,6 +79,7 @@ class _QuizScreenState extends State<QuizScreen> {
             "Te diriges a la cocina.\n"
             "Mamá te dice: 'Buenos días, ${widget.userName}. ¿Viste lo que envió tu tío sobre el agua?'\n\n"
             "¿Qué le respondes a tu mamá?",
+        imagePath: "assets/images/escena2.jpeg",
         options: [
           QuizOption(text: "Sí, ya se lo reenvié a todos.", e: 2),
           QuizOption(text: "No investigué mucho, pero lo haré luego.", v: 2),
@@ -92,6 +96,7 @@ class _QuizScreenState extends State<QuizScreen> {
             "Estás ahorrando para comprar unos audífonos nuevos. Viste dos videos de reseñas y entraste a una tienda en línea.\n"
             "Al abrir tus redes sociales, te aparece un post promocional de audífonos.\n\n"
             "¿Qué piensas o decides hacer?",
+        imagePath: "assets/images/escena1.jpeg",
         options: [
           QuizOption(text: "¡Aprovecharé esta oferta, lo compraré de una vez!", e: 2),
           QuizOption(text: "Seguro el algoritmo sabe que los necesito.", v: 1, e: 1, a: 1),
@@ -109,6 +114,7 @@ class _QuizScreenState extends State<QuizScreen> {
             "Tu amigo se acerca y te muestra su celular: 'Oye, mira lo que hice. Es Sara con el actor de la película, la modifiqué con IA'.\n"
             "Su rostro está en una escena incómoda y tu amigo agrega: 'Lo mandaré al grupo, es un meme muy gracioso'.\n\n"
             "¿Qué haces?",
+        imagePath: "assets/images/escena1.jpeg",
         options: [
           QuizOption(text: "¡Ja, ja! Envíalo al grupo.", e: 2),
           QuizOption(text: "No lo compartas, eso le puede incomodar.", a: 2, c: 3),
@@ -125,6 +131,7 @@ class _QuizScreenState extends State<QuizScreen> {
             "Llegas a casa y tu Papá te recibe:\n"
             "'Hola ${widget.userName}. Pensamos comprar los pasajes de bus para el viaje con esta agencia en Facebook que tiene 50% de descuento. ¿Qué opinas?'\n\n"
             "¿Cuál es tu sugerencia?",
+        imagePath: "assets/images/escena1.jpeg",
         options: [
           QuizOption(text: "Está bien, seguro es confiable.", v: 0),
           QuizOption(text: "Busquemos reseñas antes de decidir.", v: 3),
@@ -141,6 +148,7 @@ class _QuizScreenState extends State<QuizScreen> {
             "Ocurre un temblor breve e intenso. Al revisar tu celular ves un mensaje:\n"
             "🚨 COMUNICADO OFICIAL: Se espera una réplica de gran magnitud durante los próximos minutos. Se recomienda evacuar inmediatamente.\n\n"
             "¿Qué decisión tomas?",
+        imagePath: "assets/images/escena1.jpeg",
         options: [
           QuizOption(text: "Salir corriendo a la calle.", e: 3),
           QuizOption(text: "Verificar en la cuenta oficial de sismos.", v: 3),
@@ -280,6 +288,27 @@ class _QuizScreenState extends State<QuizScreen> {
                     style: const TextStyle(fontSize: 15, color: Colors.white70, height: 1.5),
                   ),
                 ),
+                // Dentro de la columna del contenedor de la escena:
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    currentScene.imagePath,
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Si la imagen aún no está en la carpeta, muestra un placeholder elegante
+                      return Container(
+                        height: 120,
+                        color: const Color(0xFF0F172A),
+                        child: const Center(
+                          child: Icon(Icons.image, color: Color(0xFF38BDF8), size: 40),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
                 const SizedBox(height: 28),
                 const Text(
                   '¿Qué decisión tomas?',
