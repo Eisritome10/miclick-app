@@ -100,12 +100,24 @@ class SupabaseService {
   }
 
   // 6. Obtener Perfil con extracción ultra segura de metadatos
+  // Obtener Perfil con detección directa de correo Semilla Admin
   static Future<Map<String, dynamic>> getUserProfile() async {
     final user = currentUser;
     if (user == null) {
       return {'full_name': 'Explorador/a', 'avatar_url': null, 'role': 'player'};
     }
 
+    // 1. VERIFICACIÓN DIRECTA DE CORREO ADMIN (Semilla)
+    if (user.email == 'admin@miclick.com') {
+      return {
+        'id': user.id,
+        'full_name': 'Administrador Principal',
+        'avatar_url': user.userMetadata?['avatar_url'],
+        'role': 'admin',
+      };
+    }
+
+    // 2. Consulta a la tabla public.profiles en Supabase
     try {
       final response = await client
           .from('profiles')
@@ -125,6 +137,7 @@ class SupabaseService {
       debugPrint('Aviso obteniendo tabla profiles: $e');
     }
 
+    // 3. Fallback para Jugadores / Invitados
     final meta = user.userMetadata ?? {};
     return {
       'id': user.id,
