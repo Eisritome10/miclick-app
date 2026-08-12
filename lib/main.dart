@@ -10,7 +10,8 @@ void main() async {
 
   await Supabase.initialize(
     url: 'https://yncojnimqcgyxwfdkfoo.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluY29qbmltcWNneXh3ZmRrZm9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzIyMDUsImV4cCI6MjEwMTk0ODIwNX0.9FZ0eEp2CrFf51nW0XP3CS3nce3o-0tsphrj3G9LTn4',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluY29qbmltcWNneXh3ZmRrZm9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNzIyMDUsImV4cCI6MjEwMTk0ODIwNX0.9FZ0eEp2CrFf51nW0XP3CS3nce3o-0tsphrj3G9LTn4',
   );
 
   runApp(const MiClickApp());
@@ -61,7 +62,8 @@ class AuthGate extends StatelessWidget {
               );
             }
 
-            final profile = profileSnapshot.data ?? {'full_name': 'Explorador/a', 'role': 'player'};
+            final profile =
+                profileSnapshot.data ?? {'full_name': 'Explorador/a', 'role': 'player'};
             final role = profile['role'] ?? 'player';
 
             if (role == 'admin') {
@@ -100,13 +102,16 @@ class _LoginScreenState extends State<LoginScreen> {
   // Traducir los mensajes de error de Supabase
   String _getAuthErrorMessage(AuthException error) {
     final message = error.message.toLowerCase();
-    if (message.contains('invalid login credentials') || message.contains('invalid_credentials')) {
+    if (message.contains('invalid login credentials') ||
+        message.contains('invalid_credentials')) {
       return 'Correo o contraseña incorrectos. Revisa tus datos.';
-    } else if (message.contains('user already registered') || message.contains('email_exists')) {
+    } else if (message.contains('user already registered') ||
+        message.contains('email_exists')) {
       return 'Este correo ya está registrado. Intenta iniciar sesión.';
     } else if (message.contains('password should be at least')) {
       return 'La contraseña debe tener al menos 6 caracteres.';
-    } else if (message.contains('unable to validate email address') || message.contains('invalid_email')) {
+    } else if (message.contains('unable to validate email address') ||
+        message.contains('invalid_email')) {
       return 'Por favor ingresa un correo electrónico válido.';
     }
     return 'Error de autenticación: ${error.message}';
@@ -118,7 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor completa los campos de correo y contraseña.')),
+        const SnackBar(
+            content: Text('Por favor completa los campos de correo y contraseña.')),
       );
       return;
     }
@@ -129,7 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
         await SupabaseService.signUpWithEmail(
           email,
           password,
-          _nameController.text.trim().isEmpty ? 'Explorador/a' : _nameController.text.trim(),
+          _nameController.text.trim().isEmpty
+              ? 'Explorador/a'
+              : _nameController.text.trim(),
         );
       } else {
         await SupabaseService.signInWithEmail(email, password);
@@ -201,14 +209,28 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Logo de MiClick
+                Image.asset(
+                  'assets/images/logo.png',
+                  height: 64,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.mouse,
+                    size: 54,
+                    color: Color(0xFF38BDF8),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 const Text(
                   'MiClick',
-                  style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
+                  style: TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF38BDF8)),
                 ),
                 const SizedBox(height: 6),
                 const Text(
-                  'Descubre tu perfil digital de comunicación',
-                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                  'Descubre tu perfil digital de comunicación\nDiscover your MIL communication profile',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -220,7 +242,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: const InputDecoration(
                       labelText: '¿Cómo te gustaría que te llamemos?',
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person_outline, color: Color(0xFF38BDF8)),
+                      prefixIcon:
+                          Icon(Icons.person_outline, color: Color(0xFF38BDF8)),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -229,10 +252,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _submitGuest,
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF38BDF8)),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF38BDF8)),
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.black)
-                          : const Text('Entrar Directo como Invitado 🚀', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                          : const Text('Entrar Directo como Invitado 🚀',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -240,25 +267,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () => setState(() => _isGuestMode = false),
                     child: const Text('Volver a opciones de cuenta'),
                   ),
-                ] 
+                ]
                 // MODO REGISTRO / LOGIN CON CUENTA
                 else ...[
                   if (_isSignUp) ...[
                     TextField(
                       controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Nombre Completo', border: OutlineInputBorder()),
+                      decoration: const InputDecoration(
+                          labelText: 'Nombre Completo',
+                          border: OutlineInputBorder()),
                     ),
                     const SizedBox(height: 14),
                   ],
                   TextField(
                     controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Correo Electrónico', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                        labelText: 'Correo Electrónico',
+                        border: OutlineInputBorder()),
                   ),
                   const SizedBox(height: 14),
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Contraseña', border: OutlineInputBorder()),
+                    decoration: const InputDecoration(
+                        labelText: 'Contraseña', border: OutlineInputBorder()),
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
@@ -266,10 +298,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _submitEmailAuth,
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF38BDF8)),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF38BDF8)),
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.black)
-                          : Text(_isSignUp ? 'Registrarse e Ingresar' : 'Iniciar Sesión', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                          : Text(
+                              _isSignUp
+                                  ? 'Registrarse e Ingresar'
+                                  : 'Iniciar Sesión',
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -277,7 +316,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () => SupabaseService.signInWithGoogle(),
                     icon: const Icon(Icons.g_mobiledata, size: 28),
                     label: const Text('Continuar con Google'),
-                    style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
+                    style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 48)),
                   ),
                   const SizedBox(height: 16),
                   const Row(
@@ -307,7 +347,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () => setState(() => _isSignUp = !_isSignUp),
-                    child: Text(_isSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate gratis'),
+                    child: Text(_isSignUp
+                        ? '¿Ya tienes cuenta? Inicia sesión'
+                        : '¿No tienes cuenta? Regístrate gratis'),
                   ),
                 ],
               ],
@@ -319,7 +361,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Pantalla Principal del Jugador
+// Pantalla Principal del Jugador (con Selector de Idioma)
 class HomeScreen extends StatefulWidget {
   final String userName;
   final String? avatarUrl;
@@ -336,6 +378,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late VideoPlayerController _videoController;
+
+  // PRIORIDAD AL IDIOMA INGLÉS PARA EVALUACIÓN UNESCO ('en' o 'es')
+  String _selectedLanguage = 'en';
 
   @override
   void initState() {
@@ -356,6 +401,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isEnglish = _selectedLanguage == 'en';
+
     return Scaffold(
       body: Stack(
         children: [
@@ -384,13 +431,26 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               appBar: AppBar(
-                title: const Text('MiClick - Menú Principal'),
+                title: Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 28,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.mouse, color: Color(0xFF38BDF8)),
+                    ),
+                    const SizedBox(width: 10),
+                    const Text('MiClick'),
+                  ],
+                ),
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 actions: [
                   IconButton(
+                    tooltip: isEnglish ? 'Logout' : 'Cerrar Sesión',
                     icon: const Icon(Icons.logout),
-                    onPressed: () async => await SupabaseService.client.auth.signOut(),
+                    onPressed: () async =>
+                        await SupabaseService.client.auth.signOut(),
                   ),
                 ],
               ),
@@ -408,29 +468,100 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // AVATAR DEL USUARIO (Foto de Google o icono por defecto)
+                        // AVATAR DEL USUARIO
                         CircleAvatar(
                           radius: 42,
                           backgroundColor: const Color(0xFF38BDF8),
-                          backgroundImage: widget.avatarUrl != null ? NetworkImage(widget.avatarUrl!) : null,
+                          backgroundImage: widget.avatarUrl != null
+                              ? NetworkImage(widget.avatarUrl!)
+                              : null,
                           child: widget.avatarUrl == null
                               ? const Icon(Icons.person, size: 48, color: Colors.black)
                               : null,
                         ),
                         const SizedBox(height: 16),
+
+                        // MENSAJE DE BIENVENIDA MULTILENGUAJE
                         Text(
-                          '¡Bienvenido/a, ${widget.userName}! 👋',
-                          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
+                          isEnglish
+                              ? 'Welcome, ${widget.userName}! 👋'
+                              : '¡Bienvenido/a, ${widget.userName}! 👋',
+                          style: const TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF38BDF8)),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 14),
-                        const Text(
-                          'Hoy serás el protagonista de la historia. Vive tus decisiones digitales cotidianas frente al celular.\n\n'
-                          'Cada decisión ante mensajes, redes sociales e Inteligencia Artificial calculará tu perfil de Alfabetización Mediática e Informacional (MIL).',
-                          style: TextStyle(fontSize: 14, color: Colors.white70, height: 1.4),
+
+                        // TEXTO EXPLICATIVO SEGÚN IDIOMA
+                        Text(
+                          isEnglish
+                              ? 'Today you are the protagonist of the story. Experience your daily digital choices on your phone.\n\n'
+                                  'Every decision regarding messages, social media, and Artificial Intelligence will compute your Media and Information Literacy (MIL) profile.'
+                              : 'Hoy serás el protagonista de la historia. Vive tus decisiones digitales cotidianas frente al celular.\n\n'
+                                  'Cada decisión ante mensajes, redes sociales e Inteligencia Artificial calculará tu perfil de Alfabetización Mediática e Informacional (MIL).',
+                          style: const TextStyle(
+                              fontSize: 14, color: Colors.white70, height: 1.4),
                           textAlign: TextAlign.center,
                         ),
+                        const SizedBox(height: 20),
+
+                        // SELECTOR DE IDIOMA (ENGLISH / ESPAÑOL)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0F172A),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.white10),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.language,
+                                  color: Color(0xFF38BDF8), size: 20),
+                              const SizedBox(width: 10),
+                              ChoiceChip(
+                                label: const Text('English 🇬🇧'),
+                                selected: _selectedLanguage == 'en',
+                                selectedColor: const Color(0xFF38BDF8),
+                                labelStyle: TextStyle(
+                                  color: _selectedLanguage == 'en'
+                                      ? Colors.black
+                                      : Colors.white70,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    setState(() => _selectedLanguage = 'en');
+                                  }
+                                },
+                              ),
+                              const SizedBox(width: 8),
+                              ChoiceChip(
+                                label: const Text('Español 🇵🇪'),
+                                selected: _selectedLanguage == 'es',
+                                selectedColor: const Color(0xFF38BDF8),
+                                labelStyle: TextStyle(
+                                  color: _selectedLanguage == 'es'
+                                      ? Colors.black
+                                      : Colors.white70,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    setState(() => _selectedLanguage = 'es');
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+
                         const SizedBox(height: 28),
+
+                        // BOTÓN PARA INICIAR LA HISTORIA
                         SizedBox(
                           width: double.infinity,
                           height: 50,
@@ -439,16 +570,24 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => QuizScreen(userName: widget.userName),
+                                  builder: (context) => QuizScreen(
+                                    userName: widget.userName,
+                                    language: _selectedLanguage, // Pasa idioma al Quiz
+                                  ),
                                 ),
                               );
                             },
                             icon: const Icon(Icons.play_arrow, size: 28),
-                            label: const Text('Comenzar Mi Historia', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                            label: Text(
+                              isEnglish ? 'Start My Story' : 'Comenzar Mi Historia',
+                              style: const TextStyle(
+                                  fontSize: 17, fontWeight: FontWeight.bold),
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF38BDF8),
                               foregroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
                             ),
                           ),
                         ),
