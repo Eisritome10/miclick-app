@@ -39,8 +39,22 @@ class MiClickApp extends StatelessWidget {
   }
 }
 
-class AuthGate extends StatelessWidget {
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  // Idioma global seleccionado ('en' por defecto para prioridad internacional UNESCO)
+  String _selectedLanguage = 'en';
+
+  void _onLanguageChanged(String lang) {
+    setState(() {
+      _selectedLanguage = lang;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +64,10 @@ class AuthGate extends StatelessWidget {
         final session = SupabaseService.client.auth.currentSession;
 
         if (session == null) {
-          return const LoginScreen();
+          return LoginScreen(
+            currentLanguage: _selectedLanguage,
+            onLanguageChanged: _onLanguageChanged,
+          );
         }
 
         return FutureBuilder<Map<String, dynamic>>(
@@ -62,8 +79,8 @@ class AuthGate extends StatelessWidget {
               );
             }
 
-            final profile =
-                profileSnapshot.data ?? {'full_name': 'Explorador/a', 'role': 'player'};
+            final profile = profileSnapshot.data ??
+                {'full_name': 'Explorador/a', 'role': 'player'};
             final role = profile['role'] ?? 'player';
 
             if (role == 'admin') {
@@ -72,6 +89,7 @@ class AuthGate extends StatelessWidget {
               return HomeScreen(
                 userName: profile['full_name'] ?? 'Explorador/a',
                 avatarUrl: profile['avatar_url'],
+                initialLanguage: _selectedLanguage,
               );
             }
           },
@@ -81,9 +99,16 @@ class AuthGate extends StatelessWidget {
   }
 }
 
-// Pantalla de Autenticación Unificada (Google, Correo e Invitado)
+// Pantalla de Autenticación con Selector de Idioma Pre-Login
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String currentLanguage;
+  final Function(String) onLanguageChanged;
+
+  const LoginScreen({
+    super.key,
+    required this.currentLanguage,
+    required this.onLanguageChanged,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -99,22 +124,82 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isSignUp = false;
   bool _isGuestMode = false;
 
-  // Traducir los mensajes de error de Supabase
+  late String _lang;
+
+  @override
+  void initState() {
+    super.initState();
+    _lang = widget.currentLanguage;
+  }
+
+  // Diccionario inline para el Login
+  String _t(String key) {
+    final isEn = _lang == 'en';
+    switch (key) {
+      case 'subtitle':
+        return isEn
+            ? 'Discover your MIL communication profile'
+            : 'Descubre tu perfil digital de comunicación';
+      case 'guest_prompt':
+        return isEn
+            ? 'How would you like us to call you?'
+            : '¿Cómo te gustaría que te llamemos?';
+      case 'enter_guest':
+        return isEn ? 'Enter Direct as Guest 🚀' : 'Entrar Directo como Invitado 🚀';
+      case 'back_options':
+        return isEn ? 'Back to account options' : 'Volver a opciones de cuenta';
+      case 'full_name':
+        return isEn ? 'Full Name' : 'Nombre Completo';
+      case 'email':
+        return isEn ? 'Email Address' : 'Correo Electrónico';
+      case 'password':
+        return isEn ? 'Password' : 'Contraseña';
+      case 'sign_in':
+        return isEn ? 'Sign In' : 'Iniciar Sesión';
+      case 'sign_up':
+        return isEn ? 'Register & Enter' : 'Registrarse e Ingresar';
+      case 'continue_google':
+        return isEn ? 'Continue with Google' : 'Continuar con Google';
+      case 'quick_guest':
+        return isEn ? 'Quick Entry (Guest)' : 'Ingreso Rápido (Invitado)';
+      case 'has_account':
+        return isEn
+            ? 'Already have an account? Sign in'
+            : '¿Ya tienes cuenta? Inicia sesión';
+      case 'no_account':
+        return isEn
+            ? 'Don\'t have an account? Register for free'
+            : '¿No tienes cuenta? Regístrate gratis';
+      case 'empty_fields':
+        return isEn
+            ? 'Please fill in email and password.'
+            : 'Por favor completa los campos de correo y contraseña.';
+      default:
+        return '';
+    }
+  }
+
   String _getAuthErrorMessage(AuthException error) {
+    final isEn = _lang == 'en';
     final message = error.message.toLowerCase();
     if (message.contains('invalid login credentials') ||
         message.contains('invalid_credentials')) {
-      return 'Correo o contraseña incorrectos. Revisa tus datos.';
+      return isEn
+          ? 'Incorrect email or password. Please check your data.'
+          : 'Correo o contraseña incorrectos. Revisa tus datos.';
     } else if (message.contains('user already registered') ||
         message.contains('email_exists')) {
-      return 'Este correo ya está registrado. Intenta iniciar sesión.';
+      return isEn
+          ? 'This email is already registered. Try signing in.'
+          : 'Este correo ya está registrado. Intenta iniciar sesión.';
     } else if (message.contains('password should be at least')) {
-      return 'La contraseña debe tener al menos 6 caracteres.';
-    } else if (message.contains('unable to validate email address') ||
-        message.contains('invalid_email')) {
-      return 'Por favor ingresa un correo electrónico válido.';
+      return isEn
+          ? 'Password must be at least 6 characters long.'
+          : 'La contraseña debe tener al menos 6 caracteres.';
     }
-    return 'Error de autenticación: ${error.message}';
+    return isEn
+        ? 'Authentication error: ${error.message}'
+        : 'Error de autenticación: ${error.message}';
   }
 
   Future<void> _submitEmailAuth() async {
@@ -123,8 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Por favor completa los campos de correo y contraseña.')),
+        SnackBar(content: Text(_t('empty_fields'))),
       );
       return;
     }
@@ -136,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
           email,
           password,
           _nameController.text.trim().isEmpty
-              ? 'Explorador/a'
+              ? (_lang == 'en' ? 'Explorer' : 'Explorador/a')
               : _nameController.text.trim(),
         );
       } else {
@@ -155,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Ocurrió un error inesperado: ${e.toString()}'),
+            content: Text('Error: ${e.toString()}'),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -182,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al ingresar como invitado: ${e.toString()}'),
+            content: Text('Error: ${e.toString()}'),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -209,7 +293,42 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Logo de MiClick
+                // SELECTOR DE IDIOMA EN LA PARTE SUPERIOR DEL LOGIN
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Icon(Icons.language, color: Color(0xFF38BDF8), size: 18),
+                    const SizedBox(width: 6),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _lang = _lang == 'en' ? 'es' : 'en';
+                        });
+                        widget.onLanguageChanged(_lang);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F172A),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFF38BDF8)),
+                        ),
+                        child: Text(
+                          _lang == 'en' ? '🇬🇧 English' : '🇵🇪 Español',
+                          style: const TextStyle(
+                            color: Color(0xFF38BDF8),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // LOGO Y TÍTULO
                 Image.asset(
                   'assets/images/logo.png',
                   height: 64,
@@ -228,9 +347,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Color(0xFF38BDF8)),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Descubre tu perfil digital de comunicación\nDiscover your MIL communication profile',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                Text(
+                  _t('subtitle'),
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -239,11 +358,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (_isGuestMode) ...[
                   TextField(
                     controller: _guestNameController,
-                    decoration: const InputDecoration(
-                      labelText: '¿Cómo te gustaría que te llamemos?',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: _t('guest_prompt'),
+                      border: const OutlineInputBorder(),
                       prefixIcon:
-                          Icon(Icons.person_outline, color: Color(0xFF38BDF8)),
+                          const Icon(Icons.person_outline, color: Color(0xFF38BDF8)),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -256,16 +375,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: const Color(0xFF38BDF8)),
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.black)
-                          : const Text('Entrar Directo como Invitado 🚀',
-                              style: TextStyle(
+                          : Text(
+                              _t('enter_guest'),
+                              style: const TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold)),
+                                  fontWeight: FontWeight.bold),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () => setState(() => _isGuestMode = false),
-                    child: const Text('Volver a opciones de cuenta'),
+                    child: Text(_t('back_options')),
                   ),
                 ]
                 // MODO REGISTRO / LOGIN CON CUENTA
@@ -273,24 +394,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (_isSignUp) ...[
                     TextField(
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                          labelText: 'Nombre Completo',
-                          border: OutlineInputBorder()),
+                      decoration: InputDecoration(
+                          labelText: _t('full_name'),
+                          border: const OutlineInputBorder()),
                     ),
                     const SizedBox(height: 14),
                   ],
                   TextField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                        labelText: 'Correo Electrónico',
-                        border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                        labelText: _t('email'),
+                        border: const OutlineInputBorder()),
                   ),
                   const SizedBox(height: 14),
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(
-                        labelText: 'Contraseña', border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                        labelText: _t('password'),
+                        border: const OutlineInputBorder()),
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
@@ -303,19 +425,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.black)
                           : Text(
-                              _isSignUp
-                                  ? 'Registrarse e Ingresar'
-                                  : 'Iniciar Sesión',
+                              _isSignUp ? _t('sign_up') : _t('sign_in'),
                               style: const TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold)),
+                                  fontWeight: FontWeight.bold),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: () => SupabaseService.signInWithGoogle(),
                     icon: const Icon(Icons.g_mobiledata, size: 28),
-                    label: const Text('Continuar con Google'),
+                    label: Text(_t('continue_google')),
                     style: OutlinedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 48)),
                   ),
@@ -337,7 +458,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () => setState(() => _isGuestMode = true),
                       icon: const Icon(Icons.bolt, color: Colors.amber),
-                      label: const Text('Ingreso Rápido (Invitado)'),
+                      label: Text(_t('quick_guest')),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.amber),
                         foregroundColor: Colors.amber,
@@ -347,9 +468,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () => setState(() => _isSignUp = !_isSignUp),
-                    child: Text(_isSignUp
-                        ? '¿Ya tienes cuenta? Inicia sesión'
-                        : '¿No tienes cuenta? Regístrate gratis'),
+                    child: Text(_isSignUp ? _t('has_account') : _t('no_account')),
                   ),
                 ],
               ],
@@ -361,15 +480,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Pantalla Principal del Jugador (con Selector de Idioma)
+// Pantalla Principal del Jugador (con Selector Sincronizado)
 class HomeScreen extends StatefulWidget {
   final String userName;
   final String? avatarUrl;
+  final String initialLanguage;
 
   const HomeScreen({
     super.key,
     required this.userName,
     this.avatarUrl,
+    this.initialLanguage = 'en',
   });
 
   @override
@@ -378,13 +499,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late VideoPlayerController _videoController;
-
-  // PRIORIDAD AL IDIOMA INGLÉS PARA EVALUACIÓN UNESCO ('en' o 'es')
-  String _selectedLanguage = 'en';
+  late String _selectedLanguage;
 
   @override
   void initState() {
     super.initState();
+    _selectedLanguage = widget.initialLanguage;
+
     _videoController = VideoPlayerController.asset('assets/videos/menu_bg.mp4')
       ..initialize().then((_) {
         setState(() {});
@@ -476,12 +597,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? NetworkImage(widget.avatarUrl!)
                               : null,
                           child: widget.avatarUrl == null
-                              ? const Icon(Icons.person, size: 48, color: Colors.black)
+                              ? const Icon(Icons.person,
+                                  size: 48, color: Colors.black)
                               : null,
                         ),
                         const SizedBox(height: 16),
 
-                        // MENSAJE DE BIENVENIDA MULTILENGUAJE
+                        // MENSAJE DE BIENVENIDA
                         Text(
                           isEnglish
                               ? 'Welcome, ${widget.userName}! 👋'
@@ -494,7 +616,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 14),
 
-                        // TEXTO EXPLICATIVO SEGÚN IDIOMA
                         Text(
                           isEnglish
                               ? 'Today you are the protagonist of the story. Experience your daily digital choices on your phone.\n\n'
@@ -507,7 +628,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // SELECTOR DE IDIOMA (ENGLISH / ESPAÑOL)
+                        // SELECTOR DE IDIOMA DENTRO DEL MENÚ
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 8),
@@ -572,14 +693,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => QuizScreen(
                                     userName: widget.userName,
-                                    language: _selectedLanguage, // Pasa idioma al Quiz
+                                    language: _selectedLanguage,
                                   ),
                                 ),
                               );
                             },
                             icon: const Icon(Icons.play_arrow, size: 28),
                             label: Text(
-                              isEnglish ? 'Start My Story' : 'Comenzar Mi Historia',
+                              isEnglish
+                                  ? 'Start My Story'
+                                  : 'Comenzar Mi Historia',
                               style: const TextStyle(
                                   fontSize: 17, fontWeight: FontWeight.bold),
                             ),

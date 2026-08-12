@@ -38,7 +38,7 @@ class SceneStep {
 
 class QuizScreen extends StatefulWidget {
   final String userName;
-  const QuizScreen({super.key, required this.userName});
+  const QuizScreen({super.key, required this.userName, required String language});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
