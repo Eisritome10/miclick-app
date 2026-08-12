@@ -4,10 +4,10 @@ import '../services/supabase_service.dart';
 
 class QuizOption {
   final String text;
-  final int v; // Verificación (0 a 3)
-  final int e; // Impulso Emocional (0 a 3)
-  final int a; // Conciencia Algorítmica/IA (0 a 3)
-  final int c; // Creación Responsable/Empatía (0 a 3)
+  final int v;
+  final int e;
+  final int a;
+  final int c;
 
   QuizOption({
     required this.text,
@@ -38,7 +38,13 @@ class SceneStep {
 
 class QuizScreen extends StatefulWidget {
   final String userName;
-  const QuizScreen({super.key, required this.userName, required String language});
+  final String language;
+
+  const QuizScreen({
+    super.key,
+    required this.userName,
+    this.language = 'en',
+  });
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -53,171 +59,351 @@ class _QuizScreenState extends State<QuizScreen> {
   int _scoreC = 0;
 
   List<SceneStep> _getSteps() {
+    final isEn = widget.language == 'en';
+    final name = widget.userName;
+
     return [
-      // ==========================================
-      // ESCENA GENERAL 1: EL DESPERTAR Y EL MENSAJE
-      // ==========================================
+      // ESCENA 1
       SceneStep(
-        time: "8:00 a. m.",
-        title: "1. DESPERTAR - Abriendo los ojos",
+        time: isEn ? "8:00 AM" : "8:00 a. m.",
+        title: isEn ? "1. WAKING UP - Opening your eyes" : "1. DESPERTAR - Abriendo los ojos",
         imagePath: "assets/images/escena1_ojos_cerrados.jpeg",
-        description: "Abres los ojos lentamente. La luz del sol entra por tu ventana y sientes la vibración constante de tu celular en la mesa de noche.",
+        description: isEn
+            ? "You slowly open your eyes. Sunlight enters through your window and you feel your phone constantly vibrating on the nightstand."
+            : "Abres los ojos lentamente. La luz del sol entra por tu ventana y sientes la vibración constante de tu celular en la mesa de noche.",
       ),
       SceneStep(
-        time: "8:01 a. m.",
-        title: "1. DESPERTAR - Habitación",
+        time: isEn ? "8:01 AM" : "8:01 a. m.",
+        title: isEn ? "1. WAKING UP - Bedroom" : "1. DESPERTAR - Habitación",
         imagePath: "assets/images/escena1_despierto.jpeg",
-        description: "Te levantas de la cama frotándote los ojos. El celular no deja de sonar. Piensas: 'Qué raro... ¿quién estará enviando tantos mensajes a esta hora?'",
+        description: isEn
+            ? "You get out of bed rubbing your eyes. The phone keeps ringing. You think: 'Strange... who is sending so many messages at this hour?'"
+            : "Te levantas de la cama frotándote los ojos. El celular no deja de sonar. Piensas: 'Qué raro... ¿quién estará enviando tantos mensajes a esta hora?'",
       ),
       SceneStep(
-        time: "8:03 a. m.",
-        title: "1. DESPERTAR - Mensaje del Tío",
+        time: isEn ? "8:03 AM" : "8:03 a. m.",
+        title: isEn ? "1. WAKING UP - Message from Uncle" : "1. DESPERTAR - Mensaje del Tío",
         imagePath: "assets/images/escena1_mensaje_tio.jpeg",
-        description: "Tomas tu celular y ves una captura enviada por tu tío a toda la familia alertando sobre un supuesto corte de agua potable.",
+        description: isEn
+            ? "You pick up your phone and see a screenshot sent by your uncle to the whole family warning about a alleged drinking water outage."
+            : "Tomas tu celular y ves una captura enviada por tu tío a toda la familia alertando sobre un supuesto corte de agua potable.",
         options: [
-          QuizOption(text: "Reenviar la imagen a otros grupos de inmediato para que todos estén precavidos.", e: 3, v: 0, a: 0, c: 0),
-          QuizOption(text: "Buscar en internet si las autoridades confirmaron el corte de agua antes de enviar nada.", v: 3, e: 0, a: 1, c: 1),
-          QuizOption(text: "Escribirle a mi tío por privado para preguntarle de dónde sacó esa imagen.", v: 2, c: 2, e: 0, a: 0),
-          QuizOption(text: "Ignorar la notificación y dejar el celular a un lado.", v: 1, e: 0, a: 0, c: 0),
+          QuizOption(
+            text: isEn
+                ? "Forward the image to other groups immediately so everyone is warned."
+                : "Reenviar la imagen a otros grupos de inmediato para que todos estén precavidos.",
+            e: 3,
+          ),
+          QuizOption(
+            text: isEn
+                ? "Search online if authorities confirmed the water outage before sending anything."
+                : "Buscar en internet si las autoridades confirmaron el corte de agua antes de enviar nada.",
+            v: 3,
+            a: 1,
+            c: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "Text my uncle privately to ask where he got that screenshot."
+                : "Escribirle a mi tío por privado para preguntarle de dónde sacó esa imagen.",
+            v: 2,
+            c: 2,
+          ),
+          QuizOption(
+            text: isEn
+                ? "Ignore the notification and put the phone aside."
+                : "Ignorar la notificación y dejar el celular a un lado.",
+            v: 1,
+          ),
         ],
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 2: DESAYUNO Y DIÁLOGOS
-      // ==========================================
+      // ESCENA 2
       SceneStep(
-        time: "8:20 a. m.",
-        title: "2. DESAYUNO - La Cocina",
+        time: isEn ? "8:20 AM" : "8:20 a. m.",
+        title: isEn ? "2. BREAKFAST - The Kitchen" : "2. DESAYUNO - La Cocina",
         imagePath: "assets/images/escena2_cocina.jpeg",
-        description: "Te diriges a la cocina a preparar el desayuno y te encuentras con tu mamá.",
+        description: isEn
+            ? "You head to the kitchen to make breakfast and run into your mom."
+            : "Te diriges a la cocina a preparar el desayuno y te encuentras con tu mamá.",
       ),
       SceneStep(
-        time: "8:22 a. m.",
-        title: "2. DESAYUNO - Conversación con Mamá",
+        time: isEn ? "8:22 AM" : "8:22 a. m.",
+        title: isEn ? "2. BREAKFAST - Conversation with Mom" : "2. DESAYUNO - Conversación con Mamá",
         imagePath: "assets/images/escena2_mama_hablando.jpeg",
-        characterDialog: "Mamá: 'Buenos días, ${widget.userName}. ¿Viste la alerta urgente que envió tu tío sobre el agua?'",
-        description: "Tu mamá te mira preocupada esperando tu respuesta.",
+        characterDialog: isEn
+            ? 'Mom: "Good morning, $name. Did you see the urgent alert your uncle sent about the water?"'
+            : 'Mamá: "Buenos días, $name. ¿Viste la alerta urgente que envió tu tío sobre el agua?"',
+        description: isEn
+            ? "Your mom looks at you worriedly, waiting for your answer."
+            : "Tu mamá te mira preocupada esperando tu respuesta.",
         options: [
-          QuizOption(text: "Sí mamá, ya se lo reenvié a todos mis contactos por si acaso.", e: 3, v: 0, a: 0, c: 0),
-          QuizOption(text: "No investigué mucho aún, pero lo revisaré en un momento.", v: 2, e: 1, a: 0, c: 0),
-          QuizOption(text: "Mi tío siempre se cree todo lo que ve, no le hagas caso.", v: 1, e: 1, a: 0, c: 0),
-          QuizOption(text: "Le sugiero que verifique en fuentes oficiales antes de enviárselo a sus amigas.", v: 3, c: 3, e: 0, a: 1),
+          QuizOption(
+            text: isEn
+                ? "Yes mom, I already forwarded it to all my contacts just in case."
+                : "Sí mamá, ya se lo reenvié a todos mis contactos por si acaso.",
+            e: 3,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I haven't investigated much yet, but I'll check in a moment."
+                : "No investigué mucho aún, pero lo revisaré en un momento.",
+            v: 2,
+            e: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "My uncle always believes everything he sees, don't pay attention to him."
+                : "Mi tío siempre se cree todo lo que ve, no le hagas caso.",
+            v: 1,
+            e: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I suggest checking official sources before sending it to her friends."
+                : "Le sugiero que verifique en fuentes oficiales antes de enviárselo a sus amigas.",
+            v: 3,
+            c: 3,
+            a: 1,
+          ),
         ],
       ),
       SceneStep(
-        time: "8:30 a. m.",
-        title: "2. DESAYUNO - La Cocina",
+        time: isEn ? "8:30 AM" : "8:30 a. m.",
+        title: isEn ? "2. BREAKFAST - The Kitchen" : "2. DESAYUNO - La Cocina",
         imagePath: "assets/images/escena2_cocina2.jpeg",
-        description: "Dialogas con tu mamá y ella te agradece por tu recomendación.",
-        characterDialog: "Mamá: 'Gracias por tu consejo, ${widget.userName}. Ahora iré a terminar con mis pendientes, ya que estamos planeando un viaje con papá. Hoy saldrás al cine con tus amigos, ¿verdad? ¡Que disfrutes!'",
+        description: isEn
+            ? "You talk with your mom and she thanks you for your advice."
+            : "Dialogas con tu mamá y ella te agradece por tu recomendación.",
+        characterDialog: isEn
+            ? 'Mom: "Thanks for your advice, $name. Now I\'ll finish my tasks since we are planning a trip with dad. You\'re going to the movies with friends today, right? Enjoy!"'
+            : 'Mamá: "Gracias por tu consejo, $name. Ahora iré a terminar con mis pendientes, ya que estamos planeando un viaje con papá. Hoy saldrás al cine con tus amigos, ¿verdad? ¡Que disfrutes!"',
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 3: REDES SOCIALES Y AUDÍFONOS
-      // ==========================================
+      // ESCENA 3
       SceneStep(
-        time: "11:00 a. m.",
-        title: "3. REDES SOCIALES - Oferta en tu Feed",
+        time: isEn ? "11:00 AM" : "11:00 a. m.",
+        title: isEn ? "3. SOCIAL MEDIA - Ad in your Feed" : "3. REDES SOCIALES - Oferta en tu Feed",
         imagePath: "assets/images/escena3_oferta_audifonos.jpeg",
-        description: "Estás ahorrando para comprar unos audífonos. Luego de buscar reseñas hace unos días, abres tus redes sociales y ves una oferta destacada.",
+        description: isEn
+            ? "You are saving up to buy headphones. After searching for reviews a few days ago, you open social media and see a featured deal."
+            : "Estás ahorrando para comprar unos audífonos. Luego de buscar reseñas hace unos días, abres tus redes sociales y ves una oferta destacada.",
       ),
       SceneStep(
-        time: "11:05 a. m.",
-        title: "3. REDES SOCIALES - Comparando Reseñas",
+        time: isEn ? "11:05 AM" : "11:05 a. m.",
+        title: isEn ? "3. SOCIAL MEDIA - Comparing Reviews" : "3. REDES SOCIALES - Comparando Reseñas",
         imagePath: "assets/images/escena3_resenas_audifonos.jpeg",
-        description: "Deslizas la pantalla y te aparecen dos publicaciones distintas con opiniones sobre diferentes marcas de audífonos.",
+        description: isEn
+            ? "You scroll and see two different posts with opinions on different headphone brands."
+            : "Deslizas la pantalla y te aparecen dos publicaciones distintas con opiniones sobre diferentes marcas de audífonos.",
         options: [
-          QuizOption(text: "¡Aprovecharé esta oferta y los compraré de una vez!", e: 3, v: 0, a: 0, c: 0),
-          QuizOption(text: "Siento que el algoritmo sabe exactamente lo que necesito comprar.", v: 1, e: 2, a: 1, c: 0),
-          QuizOption(text: "Imagino que me aparecen porque estuve buscando audífonos previamente.", v: 2, a: 3, c: 1, e: 0),
-          QuizOption(text: "Voy a comparar qué precios y reseñas les aparecen a mis amigos.", v: 3, a: 2, c: 2, e: 0),
+          QuizOption(
+            text: isEn
+                ? "I'll take advantage of this deal and buy them right away!"
+                : "¡Aprovecharé esta oferta y los compraré de una vez!",
+            e: 3,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I feel like the algorithm knows exactly what I need to buy."
+                : "Siento que el algoritmo sabe exactamente lo que necesito comprar.",
+            v: 1,
+            e: 2,
+            a: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I guess they appear because I was searching for headphones earlier."
+                : "Imagino que me aparecen porque estuve buscando audífonos previamente.",
+            v: 2,
+            a: 3,
+            c: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I'll compare what prices and reviews my friends get."
+                : "Voy a comparar qué precios y reseñas les aparecen a mis amigos.",
+            v: 3,
+            a: 2,
+            c: 2,
+          ),
         ],
       ),
       SceneStep(
-        time: "11:15 a. m.",
-        title: "3. REDES SOCIALES - Recordatorio de Salida",
+        time: isEn ? "11:15 AM" : "11:15 a. m.",
+        title: isEn ? "3. SOCIAL MEDIA - Outing Reminder" : "3. REDES SOCIALES - Recordatorio de Salida",
         imagePath: "assets/images/escena3_oferta_cine.jpeg",
-        description: "Sigues deslizando la red social y te cruzas con un anuncio de promoción 3x2 en el cine. Recuerdas que hoy quedaste en ir al cine con tus amigos.",
+        description: isEn
+            ? "You keep scrolling and come across a 3x2 cinema ticket promo. You remember you agreed to go to the movies with friends today."
+            : "Sigues deslizando la red social y te cruzas con un anuncio de promoción 3x2 en el cine. Recuerdas que hoy quedaste en ir al cine con tus amigos.",
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 4: EL CINE Y EL DEEPFAKE
-      // ==========================================
+      // ESCENA 4
       SceneStep(
-        time: "4:30 p. m.",
-        title: "4. CINE - Salida con amigos",
+        time: isEn ? "4:30 PM" : "4:30 p. m.",
+        title: isEn ? "4. CINEMA - Outing with friends" : "4. CINE - Salida con amigos",
         imagePath: "assets/images/escena4_cine.jpeg",
-        description: "Llegas al cine y te encuentras con tu grupo. Mientras Sara va al baño un momento, tu amigo te llama riéndose con el celular en la mano.",
+        description: isEn
+            ? "You arrive at the cinema and meet your group. While Sara goes to the restroom, your friend calls you laughing with his phone in hand."
+            : "Llegas al cine y te encuentras con tu grupo. Mientras Sara va al baño un momento, tu amigo te llama riéndose con el celular en la mano.",
       ),
       SceneStep(
-        time: "4:35 p. m.",
-        title: "4. CINE - La imagen editada con IA",
+        time: isEn ? "4:35 PM" : "4:35 p. m.",
+        title: isEn ? "4. CINEMA - AI Edit Image" : "4. CINE - La imagen editada con IA",
         imagePath: "assets/images/escena4_deepfake.jpeg",
-        description: "Tu amigo te muestra una foto donde usó Inteligencia Artificial para alterar el rostro de Sara en una escena comprometedora de la película.",
-        characterDialog: "Amigo: 'Oye, ${widget.userName}, ¡mira lo que hice con IA! La mandaré al chat grupal, es un meme muy gracioso.'",
+        description: isEn
+            ? "Your friend shows you a photo where he used Artificial Intelligence to alter Sara's face into a movie scene."
+            : "Tu amigo te muestra una foto donde usó Inteligencia Artificial para alterar el rostro de Sara en una escena comprometedora de la película.",
+        characterDialog: isEn
+            ? 'Friend: "Hey, $name, look what I did with AI! I\'ll send it to the group chat, it\'s a hilarious meme."'
+            : 'Amigo: "Oye, $name, ¡mira lo que hice con IA! La mandaré al chat grupal, es un meme muy gracioso."',
         options: [
-          QuizOption(text: "¡Ja, ja! Envíalo al grupo de una vez para reírnos todos.", e: 3, a: 0, c: 0, v: 0),
-          QuizOption(text: "No lo hagas, eso le va a incomodar bastante a Sara.", a: 2, c: 3, e: 0, v: 0),
-          QuizOption(text: "Borra esa imagen, no está bien usar su rostro así.", a: 3, c: 3, e: 0, v: 1),
-          QuizOption(text: "Ignoraré esa imagen por completo como si nunca lo hubiera visto.", a: 1, c: 1, e: 0, v: 0),
+          QuizOption(
+            text: isEn
+                ? "Ha ha! Send it to the group right away so we all laugh."
+                : "¡Ja, ja! Envíalo al grupo de una vez para reírnos todos.",
+            e: 3,
+          ),
+          QuizOption(
+            text: isEn
+                ? "Don't do it, that will make Sara really uncomfortable."
+                : "No lo hagas, eso le va a incomodar bastante a Sara.",
+            a: 2,
+            c: 3,
+          ),
+          QuizOption(
+            text: isEn
+                ? "Delete that image, it's not right to use her face like that."
+                : "Borra esa imagen, no está bien usar su rostro así.",
+            a: 3,
+            c: 3,
+            v: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I'll completely ignore that image as if I never saw it."
+                : "Ignoraré esa imagen por completo como si nunca lo hubiera visto.",
+            a: 1,
+            c: 1,
+          ),
         ],
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 5: REGRESO A CASA Y VIAJE
-      // ==========================================
+      // ESCENA 5
       SceneStep(
-        time: "7:30 p. m.",
-        title: "5. REGRESO A CASA - La propuesta de Papá",
+        time: isEn ? "7:30 PM" : "7:30 p. m.",
+        title: isEn ? "5. RETURNING HOME - Dad's Proposal" : "5. REGRESO A CASA - La propuesta de Papá",
         imagePath: "assets/images/escena5_papa.jpeg",
-        description: "Regresas a casa de noche. Tu papá te recibe algo preocupado.",
+        description: isEn
+            ? "You return home at night. Your dad welcomes you somewhat concerned."
+            : "Regresas a casa de noche. Tu papá te recibe algo preocupado.",
       ),
       SceneStep(
-        time: "7:35 p. m.",
-        title: "5. REGRESO A CASA - Pasajes sospechosos",
+        time: isEn ? "7:35 PM" : "7:35 p. m.",
+        title: isEn ? "5. RETURNING HOME - Suspicious Tickets" : "5. REGRESO A CASA - Pasajes sospechosos",
         imagePath: "assets/images/escena5_oferta_viaje.jpeg",
-        description: "Te muestra una publicación que encontró en las redes sociales con pasajes de bus al 30% de descuento. Notas fallas ortográficas en la imagen.",
-        characterDialog: "Papá: 'Hola ${widget.userName}, mira esta oferta para el viaje familiar. ¿Compro los pasajes aquí de una vez?'",
+        description: isEn
+            ? "He shows you a post he found on social media with bus tickets at a 30% discount. You notice spelling mistakes in the image."
+            : "Te muestra una publicación que encontró en las redes sociales con pasajes de bus al 30% de descuento. Notas fallas ortográficas en la imagen.",
+        characterDialog: isEn
+            ? 'Dad: "Hi $name, look at this deal for the family trip. Should I buy the tickets here right now?"'
+            : 'Papá: "Hola $name, mira esta oferta para el viaje familiar. ¿Compro los pasajes aquí de una vez?"',
         options: [
-          QuizOption(text: "Me parece bien papá, si está en redes sociales seguro es una agencia real.", v: 0, e: 2, a: 0, c: 0),
-          QuizOption(text: "Hay que buscar opiniones y reclamos de otros usuarios en las redes antes de pagar.", v: 3, a: 1, c: 1, e: 0),
-          QuizOption(text: "Voy a revisar si la empresa tiene un sitio web oficial o RUC registrado.", v: 3, a: 3, c: 1, e: 0),
-          QuizOption(text: "Comparemos los precios directamente en las agencias de transporte conocidas.", v: 2, c: 2, a: 1, e: 0),
+          QuizOption(
+            text: isEn
+                ? "Sounds good dad, if it's on social media it's probably a real agency."
+                : "Me parece bien papá, si está en redes sociales seguro es una agencia real.",
+            e: 2,
+          ),
+          QuizOption(
+            text: isEn
+                ? "We should check reviews and complaints from other users before paying."
+                : "Hay que buscar opiniones y reclamos de otros usuarios en las redes antes de pagar.",
+            v: 3,
+            a: 1,
+            c: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I'll check if the company has an official website or registered business ID."
+                : "Voy a revisar si la empresa tiene un sitio web oficial o RUC registrado.",
+            v: 3,
+            a: 3,
+            c: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "Let's compare prices directly with well-known transport agencies."
+                : "Comparemos los precios directamente en las agencias de transporte conocidas.",
+            v: 2,
+            c: 2,
+            a: 1,
+          ),
         ],
       ),
 
-      // ==========================================
-      // ESCENA GENERAL 6: NOCHE Y COMUNICADO DE SISMO
-      // ==========================================
+      // ESCENA 6
       SceneStep(
-        time: "11:45 p. m.",
-        title: "6. NOCHE - El temblor",
+        time: isEn ? "11:45 PM" : "11:45 p. m.",
+        title: isEn ? "6. NIGHT - The Earthquake" : "6. NOCHE - El temblor",
         imagePath: "assets/images/escena6_temblor.jpeg",
-        description: "Estás a punto de dormir cuando sientes que la cama tiembla fuertemente durante varios segundos.",
+        description: isEn
+            ? "You are about to sleep when you feel the bed shake strongly for several seconds."
+            : "Estás a punto de dormir cuando sientes que la cama tiembla fuertemente durante varios segundos.",
       ),
       SceneStep(
-        time: "11:46 p. m.",
-        title: "6. NOCHE - El susto",
+        time: isEn ? "11:46 PM" : "11:46 p. m.",
+        title: isEn ? "6. NIGHT - The Aftershock Scare" : "6. NOCHE - El susto",
         imagePath: "assets/images/escena6_temblor2.jpeg",
-        description: "El temblor disminuye poco a poco. Tu celular sigue vibrando con notificaciones de mensajes y redes sociales.",
+        description: isEn
+            ? "The shaking gradually slows down. Your phone keeps vibrating with notification messages."
+            : "El temblor disminuye poco a poco. Tu celular sigue vibrando con notificaciones de mensajes y redes sociales.",
       ),
       SceneStep(
-        time: "11:50 p. m.",
-        title: "6. NOCHE - Falsa Alerta de Réplica",
+        time: isEn ? "11:50 PM" : "11:50 p. m.",
+        title: isEn ? "6. NIGHT - Fake Aftershock Alert" : "6. NOCHE - Falsa Alerta de Réplica",
         imagePath: "assets/images/escena6_alerta_sismo.jpeg",
-        description: "Tomas tu teléfono por susto y ves una imagen circulando en redes con el logo de un organismo estatal sobre una réplica inminente.",
+        description: isEn
+            ? "You pick up your phone out of fear and see an image circulating with a state agency logo about an imminent aftershock."
+            : "Tomas tu teléfono por susto y ves una imagen circulando en redes con el logo de un organismo estatal sobre una réplica inminente.",
         options: [
-          QuizOption(text: "Salgo corriendo a la calle inmediatamente sin dudarlo.", e: 3, v: 0, a: 0, c: 0),
-          QuizOption(text: "Verifico en la cuenta oficial verificada del instituto sismológico.", v: 3, e: 0, a: 1, c: 1),
-          QuizOption(text: "Aviso a mi familia con calma para revisar si el comunicado es oficial.", v: 2, c: 3, e: 1, a: 1),
-          QuizOption(text: "Lo ignoro por completo y trato de volver a dormir.", v: 0, e: 0, a: 0, c: 0),
+          QuizOption(
+            text: isEn
+                ? "I run out into the street immediately without hesitation."
+                : "Salgo corriendo a la calle inmediatamente sin dudarlo.",
+            e: 3,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I check the verified official account of the seismological institute."
+                : "Verifico en la cuenta oficial verificada del instituto sismológico.",
+            v: 3,
+            a: 1,
+            c: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I calmly alert my family to check if the announcement is official."
+                : "Aviso a mi familia con calma para revisar si el comunicado es oficial.",
+            v: 2,
+            c: 3,
+            e: 1,
+            a: 1,
+          ),
+          QuizOption(
+            text: isEn
+                ? "I completely ignore it and try to go back to sleep."
+                : "Lo ignoro por completo y trato de volver a dormir.",
+          ),
         ],
       ),
       SceneStep(
-        time: "12:00 a. m.",
-        title: "FIN DEL DÍA - A descansar",
+        time: isEn ? "12:00 AM" : "12:00 a. m.",
+        title: isEn ? "END OF THE DAY - Time to Rest" : "FIN DEL DÍA - A descansar",
         imagePath: "assets/images/escena6_temblor3.jpeg",
-        description: "Pasaron muchas cosas y estás cansado. Decides apagar el celular y descansar para el día siguiente.",
+        description: isEn
+            ? "A lot happened and you're tired. You decide to turn off your phone and rest for the next day."
+            : "Pasaron muchas cosas y estás cansado. Decides apagar el celular y descansar para el día siguiente.",
       ),
     ];
   }
@@ -249,32 +435,20 @@ class _QuizScreenState extends State<QuizScreen> {
     });
   }
 
-  // ALGORITMO NORMALIZADO CON UMBRALES COHERENTES (0 - 18 PTS)
   void _finishQuiz() {
     String profile = "Reactivo/a";
 
-    // 1. Amplificador/a: Baja Empatía (<=4) y Muy Alto Impulso Emocional (>=12)
     if (_scoreC <= 4 && _scoreE >= 12) {
       profile = "Amplificador/a";
-    } 
-    // 2. Ingenuo/a Digital: Nula o baja conciencia algorítmica/IA (<=2)
-    else if (_scoreA <= 2) {
+    } else if (_scoreA <= 2) {
       profile = "Ingenuo/a Digital";
-    } 
-    // 3. Reactivo/a: Alto impulso emocional (>=12) y baja verificación (<=9)
-    else if (_scoreE >= 12 && _scoreV <= 9) {
+    } else if (_scoreE >= 12 && _scoreV <= 9) {
       profile = "Reactivo/a";
-    } 
-    // 4. Confirmador/a: Buena verificación (>=12) pero atrapado en sesgo/sin IA (<=2)
-    else if (_scoreV >= 12 && _scoreA <= 2) {
+    } else if (_scoreV >= 12 && _scoreA <= 2) {
       profile = "Confirmador/a";
-    } 
-    // 5. Empático/a Crítico/a: Alta Verificación (>=12), Alta Empatía (>=10) y Bajo Impulso (<=8)
-    else if (_scoreV >= 12 && _scoreC >= 10 && _scoreE <= 8) {
+    } else if (_scoreV >= 12 && _scoreC >= 10 && _scoreE <= 8) {
       profile = "Empático/a Crítico/a";
-    } 
-    // 6. Investigador/a: Alta capacidad comprobada de Verificación (>=12)
-    else if (_scoreV >= 12) {
+    } else if (_scoreV >= 12) {
       profile = "Investigador/a";
     }
 
@@ -295,6 +469,7 @@ class _QuizScreenState extends State<QuizScreen> {
           scoreE: _scoreE,
           scoreA: _scoreA,
           scoreC: _scoreC,
+          language: widget.language,
         ),
       ),
     );
@@ -305,10 +480,15 @@ class _QuizScreenState extends State<QuizScreen> {
     final steps = _getSteps();
     final currentStep = steps[_currentStepIndex];
     final bool hasOptions = currentStep.options != null && currentStep.options!.isNotEmpty;
+    final isEn = widget.language == 'en';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Paso ${_currentStepIndex + 1} de ${steps.length}'),
+        title: Text(
+          isEn
+              ? 'Step ${_currentStepIndex + 1} of ${steps.length}'
+              : 'Paso ${_currentStepIndex + 1} de ${steps.length}',
+        ),
         backgroundColor: const Color(0xFF1E293B),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(6),
@@ -349,8 +529,6 @@ class _QuizScreenState extends State<QuizScreen> {
                   style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 const SizedBox(height: 16),
-
-                // ILUSTRACIÓN DE LA ESCENA
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
@@ -370,8 +548,6 @@ class _QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // DESCRIPCIÓN NARRATIVA
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -384,8 +560,6 @@ class _QuizScreenState extends State<QuizScreen> {
                     style: const TextStyle(fontSize: 15, color: Colors.white70, height: 1.5),
                   ),
                 ),
-
-                // DIÁLOGO DEL PERSONAJE
                 if (currentStep.characterDialog != null) ...[
                   const SizedBox(height: 14),
                   Container(
@@ -401,13 +575,11 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
                   ),
                 ],
-
                 const SizedBox(height: 28),
-
                 if (hasOptions) ...[
-                  const Text(
-                    '¿Qué decisión vas a tomar?',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  Text(
+                    isEn ? 'What decision will you make?' : '¿Qué decisión vas a tomar?',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   const SizedBox(height: 16),
                   ...currentStep.options!.map((option) {
@@ -438,7 +610,10 @@ class _QuizScreenState extends State<QuizScreen> {
                     child: ElevatedButton.icon(
                       onPressed: _nextStep,
                       icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Continuar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      label: Text(
+                        isEn ? 'Continue' : 'Continuar',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF38BDF8),
                         foregroundColor: Colors.black,
@@ -463,6 +638,7 @@ class AnalyzingScreen extends StatefulWidget {
   final int scoreE;
   final int scoreA;
   final int scoreC;
+  final String language;
 
   const AnalyzingScreen({
     super.key,
@@ -471,6 +647,7 @@ class AnalyzingScreen extends StatefulWidget {
     required this.scoreE,
     required this.scoreA,
     required this.scoreC,
+    this.language = 'en',
   });
 
   @override
@@ -479,11 +656,13 @@ class AnalyzingScreen extends StatefulWidget {
 
 class _AnalyzingScreenState extends State<AnalyzingScreen> {
   late VideoPlayerController _videoController;
-  String _loadingText = "Analizando decisiones...";
+  late String _loadingText;
 
   @override
   void initState() {
     super.initState();
+    final isEn = widget.language == 'en';
+    _loadingText = isEn ? "Analyzing decisions..." : "Analizando decisiones...";
 
     _videoController = VideoPlayerController.asset('assets/videos/menu_bg.mp4')
       ..initialize().then((_) {
@@ -495,7 +674,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
     Future.delayed(const Duration(milliseconds: 1500), () {
       if (mounted) {
         setState(() {
-          _loadingText = "Calculando el perfil de hoy...";
+          _loadingText = isEn ? "Calculating today's profile..." : "Calculando el perfil de hoy...";
         });
       }
     });
@@ -511,6 +690,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
               scoreE: widget.scoreE,
               scoreA: widget.scoreA,
               scoreC: widget.scoreC,
+              language: widget.language,
             ),
           ),
         );
@@ -526,6 +706,8 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isEn = widget.language == 'en';
+
     return Scaffold(
       body: Stack(
         children: [
@@ -585,9 +767,11 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Evaluando tus reacciones ante desinformación, IA y redes sociales...',
-                      style: TextStyle(fontSize: 13, color: Colors.white70),
+                    Text(
+                      isEn
+                          ? 'Evaluating your reactions to misinformation, AI, and social media...'
+                          : 'Evaluando tus reacciones ante desinformación, IA y redes sociales...',
+                      style: const TextStyle(fontSize: 13, color: Colors.white70),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -608,6 +792,7 @@ class ResultScreen extends StatelessWidget {
   final int scoreE;
   final int scoreA;
   final int scoreC;
+  final String language;
 
   const ResultScreen({
     super.key,
@@ -616,68 +801,124 @@ class ResultScreen extends StatelessWidget {
     required this.scoreE,
     required this.scoreA,
     required this.scoreC,
+    this.language = 'en',
   });
 
   Map<String, dynamic> _getProfileDetails() {
+    final isEn = language == 'en';
+
     switch (profile) {
       case 'Investigador/a':
         return {
           'icon': '🔎',
-          'desc': 'Conseguiste este perfil por las decisiones que tomaste: en la mayoría de los momentos elegiste buscar la fuente, comparar información o confirmar antes de actuar con el rumor del agua, la agencia de viajes y el comunicado del sismo.',
-          'recs': [
-            'Comparte cómo verificaste a tu familia y amigos. Es una forma sencilla de transmitir el hábito a otras personas.',
-            'Tener ya identificadas 2 o 3 cuentas de verificadores confiables en redes sociales o sitios web oficiales te ahorrará tiempo la próxima vez.'
-          ]
+          'title': isEn ? 'The Researcher' : 'Investigador/a',
+          'desc': isEn
+              ? 'You achieved this profile due to your choices: in most situations, you chose to check sources, compare information, or confirm before acting.'
+              : 'Conseguiste este perfil por las decisiones que tomaste: en la mayoría de los momentos elegiste buscar la fuente, comparar información o confirmar antes de actuar.',
+          'recs': isEn
+              ? [
+                  'Share how you verified information with friends and family.',
+                  'Identify 2 or 3 trusted fact-checking channels on social media or official websites.'
+                ]
+              : [
+                  'Comparte cómo verificaste a tu familia y amigos. Es una forma sencilla de transmitir el hábito.',
+                  'Tener identificadas 2 o 3 cuentas de verificadores confiables ahorra tiempo.'
+                ]
         };
       case 'Empático/a Crítico/a':
         return {
           'icon': '💬',
-          'desc': 'Verificaste antes de actuar y, además, tomaste en cuenta el impacto en otras personas — como al proteger a tu amiga frente a la imagen manipulada con IA, o al manejar con calma el rumor del tío.',
-          'recs': [
-            'Comunicar una corrección sin confrontar, explicando el porqué, suele ser más efectivo para que el mensaje realmente se escuche.',
-            'En situaciones donde el daño potencial es alto, actuar con rapidez importa tanto como actuar con calma.',
-            'Este estilo de comunicación sirve de modelo para otras personas.'
-          ]
+          'title': isEn ? 'The Critical Empath' : 'Empático/a Crítico/a',
+          'desc': isEn
+              ? 'You verified information before acting and also considered the impact on others, protecting privacy and encouraging respectful communication.'
+              : 'Verificaste antes de actuar y, además, tomaste en cuenta el impacto en otras personas, protegiendo la privacidad y promoviendo el respeto.',
+          'recs': isEn
+              ? [
+                  'Communicating corrections without confrontation is more effective.',
+                  'In high-risk potential damage situations, acting quickly matters as much as staying calm.',
+                  'Your communication style can serve as a role model for others.'
+                ]
+              : [
+                  'Comunicar una corrección sin confrontar suele ser más efectivo.',
+                  'En situaciones de alto riesgo, actuar con rapidez importa tanto como actuar con calma.',
+                  'Este estilo de comunicación sirve de modelo para otras personas.'
+                ]
         };
       case 'Confirmador/a':
         return {
           'icon': '🪞',
-          'desc': 'En general elegiste confirmar información antes de actuar, pero principalmente dentro de fuentes o personas cercanas (como la familia), sin buscar activamente otros ángulos.',
-          'recs': [
-            'Buscar de vez en cuando una fuente que piensa distinto sobre un tema amplía lo que "verificar" significa.',
-            'Al confirmar algo con una segunda fuente, pregúntate si esa fuente es realmente independiente o si repite lo mismo.',
-            'Revisar cómo está configurado tu feed te permite ver si estás viendo una versión limitada de la información.'
-          ]
+          'title': isEn ? 'The Confirmator' : 'Confirmador/a',
+          'desc': isEn
+              ? 'You generally chose to confirm information before acting, but mainly within close sources or family circles without checking broader angles.'
+              : 'En general elegiste confirmar información antes de actuar, pero principalmente dentro de fuentes o personas cercanas, sin buscar otros ángulos.',
+          'recs': isEn
+              ? [
+                  'Checking sources with different perspectives broadens what "verification" means.',
+                  'Ask yourself if a second source is truly independent or just repeating the same text.',
+                  'Review your social feed configuration to avoid filter bubbles.'
+                ]
+              : [
+                  'Buscar fuentes que piensan distinto amplía lo que "verificar" significa.',
+                  'Pregúntate si esa segunda fuente es realmente independiente.',
+                  'Revisa cómo está configurado tu feed para evitar cámaras de eco.'
+                ]
         };
       case 'Ingenuo/a Digital':
         return {
           'icon': '🤖',
-          'desc': 'Frente a contenido manipulado con inteligencia artificial —como la imagen de tu amiga— o un comunicado falso, elegiste opciones que no cuestionaron su veracidad antes de actuar.',
-          'recs': [
-            'Conocer señales básicas de contenido manipulado (inconsistencias en bordes, luces, voces o situaciones irrealmente perfectas) ayuda a frenar a tiempo.',
-            'Antes de reaccionar a una imagen impactante, pregúntate quién podría beneficiarse de que se crea real.',
-            'Frente a un "comunicado oficial", busca si la institución lo confirma en su propio canal.'
-          ]
+          'title': isEn ? 'The Digital Naïve' : 'Ingenuo/a Digital',
+          'desc': isEn
+              ? 'Faced with AI-manipulated content or unverified emergency posts, you selected options that did not question their authenticity before acting.'
+              : 'Frente a contenido manipulado con IA o comunicados falsos, elegiste opciones que no cuestionaron su veracidad antes de actuar.',
+          'recs': isEn
+              ? [
+                  'Learn basic signs of manipulated content (inconsistencies in borders, lights, voices).',
+                  'Before reacting to an impactful image or video, ask who benefits if people believe it.',
+                  'Check if institutions confirm official posts on their own channels.'
+                ]
+              : [
+                  'Conocer señales básicas de contenido manipulado ayuda a frenar a tiempo.',
+                  'Pregúntate quién podría beneficiarse de que creas que algo es real.',
+                  'Busca si la institución confirma el comunicado en su canal oficial.'
+                ]
         };
       case 'Amplificador/a':
         return {
           'icon': '🎭',
-          'desc': 'En varios momentos elegiste compartir o reenviar contenido —como el meme con la imagen manipulada o el rumor del agua— sin verificarlo ni considerar el impacto que podía tener.',
-          'recs': [
-            'Antes de compartir algo que genera una reacción fuerte, hazte una pregunta simple: ¿qué tan seguro estoy de que esto es cierto?',
-            'Decir que no a compartir contenido que afecta a otra persona evita un daño difícil de deshacer.',
-            'Puedes usar el mismo alcance que tienes para aclarar o desmentir información de vez en cuando.'
-          ]
+          'title': isEn ? 'The Amplifier' : 'Amplificador/a',
+          'desc': isEn
+              ? 'In several moments you chose to share or forward content without verifying or considering the negative impact it could cause.'
+              : 'En varios momentos elegiste compartir o reenviar contenido sin verificarlo ni considerar el impacto negativo que podía tener.',
+          'recs': isEn
+              ? [
+                  'Before sharing something that triggers strong emotions, ask: How sure am I that this is true?',
+                  'Refusing to share content that affects someone avoids harm that is hard to undo.',
+                  'Use your reach to clarify or debunk misinformation from time to time.'
+                ]
+              : [
+                  'Antes de compartir algo emocionante, pregúntate: ¿Qué tan seguro estoy de que esto es cierto?',
+                  'Evita compartir contenido que afecta a otra persona para prevenir daños.',
+                  'Puedes usar tu alcance para aclarar o desmentir información de vez en cuando.'
+                ]
         };
       default:
         return {
           'icon': '📢',
-          'desc': 'En varios momentos —el mensaje del tío, los posts virales, la alerta del sismo— elegiste compartir o reaccionar antes de buscar más información.',
-          'recs': [
-            'Hacer una pausa breve (contar hasta 10) antes de compartir algo que generó una reacción emocional fuerte te da tiempo a decidir.',
-            'Identificar la emoción que un contenido te provoca (miedo, indignación, euforia) sirve como señal para frenar.',
-            'Antes de reenviar algo urgente, pregúntate: si esto fuera falso, ¿a quién le haría daño que yo lo comparta?'
-          ]
+          'title': isEn ? 'The Reactive' : 'Reactivo/a',
+          'desc': isEn
+              ? 'In several moments you chose to share or react before seeking more context or fact-checking.'
+              : 'En varios momentos elegiste compartir o reaccionar antes de buscar más información.',
+          'recs': isEn
+              ? [
+                  'Take a short pause before sharing content that generates a strong emotional reaction.',
+                  'Identify the emotion a post triggers in you (fear, anger, excitement) as a signal to slow down.',
+                  'Ask yourself: If this were false, who would be harmed if I share it?'
+                ]
+              : [
+                  'Haz una pausa breve antes de compartir algo que causó una reacción emocional fuerte.',
+                  'Identifica la emoción que el contenido te provoca como señal para frenar.',
+                  'Pregúntate: si esto fuera falso, ¿a quién le haría daño que yo lo comparta?'
+                ]
         };
     }
   }
@@ -686,6 +927,7 @@ class ResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final details = _getProfileDetails();
     final List<String> recs = details['recs'];
+    final isEn = language == 'en';
 
     return Scaffold(
       body: Center(
@@ -704,10 +946,13 @@ class ResultScreen extends StatelessWidget {
               children: [
                 Text(details['icon'], style: const TextStyle(fontSize: 60)),
                 const SizedBox(height: 12),
-                const Text('Tu Perfil Digital es:', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                Text(
+                  isEn ? 'Your Digital Profile is:' : 'Tu Perfil Digital es:',
+                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                ),
                 const SizedBox(height: 6),
                 Text(
-                  profile,
+                  details['title'],
                   style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF38BDF8)),
                 ),
                 const SizedBox(height: 20),
@@ -719,9 +964,12 @@ class ResultScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 const Divider(color: Colors.white10),
                 const SizedBox(height: 16),
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('💡 Recomendaciones para ti:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                  child: Text(
+                    isEn ? '💡 Recommendations for you:' : '💡 Recomendaciones para ti:',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 ...recs.map((rec) => Padding(
@@ -745,7 +993,10 @@ class ResultScreen extends StatelessWidget {
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Volver al Menú Principal', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(
+                      isEn ? 'Back to Main Menu' : 'Volver al Menú Principal',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 )
               ],

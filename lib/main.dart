@@ -47,7 +47,6 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
-  // Idioma global seleccionado ('en' por defecto para prioridad internacional UNESCO)
   String _selectedLanguage = 'en';
 
   void _onLanguageChanged(String lang) {
@@ -99,7 +98,6 @@ class _AuthGateState extends State<AuthGate> {
   }
 }
 
-// Pantalla de Autenticación con Selector de Idioma Pre-Login
 class LoginScreen extends StatefulWidget {
   final String currentLanguage;
   final Function(String) onLanguageChanged;
@@ -132,7 +130,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _lang = widget.currentLanguage;
   }
 
-  // Diccionario inline para el Login
   String _t(String key) {
     final isEn = _lang == 'en';
     switch (key) {
@@ -283,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 420),
+            constraints: const BoxConstraints(maxWidth: 440),
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
@@ -293,13 +290,14 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // SELECTOR DE IDIOMA EN LA PARTE SUPERIOR DEL LOGIN
+                // SELECTOR DE IDIOMA CON BOTONES MÁS GRANDES Y AMPLIOS
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Icon(Icons.language, color: Color(0xFF38BDF8), size: 18),
-                    const SizedBox(width: 6),
+                    const Icon(Icons.language, color: Color(0xFF38BDF8), size: 22),
+                    const SizedBox(width: 8),
                     InkWell(
+                      borderRadius: BorderRadius.circular(10),
                       onTap: () {
                         setState(() {
                           _lang = _lang == 'en' ? 'es' : 'en';
@@ -308,17 +306,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                            horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: const Color(0xFF0F172A),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0xFF38BDF8)),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFF38BDF8), width: 1.5),
                         ),
                         child: Text(
                           _lang == 'en' ? '🇬🇧 English' : '🇵🇪 Español',
                           style: const TextStyle(
                             color: Color(0xFF38BDF8),
-                            fontSize: 12,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -326,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 // LOGO Y TÍTULO
                 Image.asset(
@@ -480,7 +478,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Pantalla Principal del Jugador (con Selector Sincronizado)
 class HomeScreen extends StatefulWidget {
   final String userName;
   final String? avatarUrl;
@@ -527,7 +524,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // 1. VIDEO EN BUCLE DE FONDO
           if (_videoController.value.isInitialized)
             SizedBox.expand(
               child: FittedBox(
@@ -542,12 +538,10 @@ class _HomeScreenState extends State<HomeScreen> {
           else
             Container(color: const Color(0xFF0F172A)),
 
-          // 2. CAPA OSCURA SEMITRANSPARENTE
           Container(
             color: Colors.black.withOpacity(0.55),
           ),
 
-          // 3. CONTENIDO DEL MENÚ PRINCIPAL
           SafeArea(
             child: Scaffold(
               backgroundColor: Colors.transparent,
@@ -589,7 +583,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // AVATAR DEL USUARIO
                         CircleAvatar(
                           radius: 42,
                           backgroundColor: const Color(0xFF38BDF8),
@@ -603,7 +596,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // MENSAJE DE BIENVENIDA
                         Text(
                           isEnglish
                               ? 'Welcome, ${widget.userName}! 👋'
@@ -626,25 +618,26 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontSize: 14, color: Colors.white70, height: 1.4),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 22),
 
-                        // SELECTOR DE IDIOMA DENTRO DEL MENÚ
+                        // SELECTOR DE IDIOMA MÁS GRANDE Y CÓMODO
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 8),
+                              horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
                             color: const Color(0xFF0F172A),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(14),
                             border: Border.all(color: Colors.white10),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Icon(Icons.language,
-                                  color: Color(0xFF38BDF8), size: 20),
-                              const SizedBox(width: 10),
+                                  color: Color(0xFF38BDF8), size: 22),
+                              const SizedBox(width: 12),
                               ChoiceChip(
-                                label: const Text('English 🇬🇧'),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                label: const Text('English 🇬🇧', style: TextStyle(fontSize: 14)),
                                 selected: _selectedLanguage == 'en',
                                 selectedColor: const Color(0xFF38BDF8),
                                 labelStyle: TextStyle(
@@ -659,9 +652,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }
                                 },
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 10),
                               ChoiceChip(
-                                label: const Text('Español 🇵🇪'),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                label: const Text('Español 🇵🇪', style: TextStyle(fontSize: 14)),
                                 selected: _selectedLanguage == 'es',
                                 selectedColor: const Color(0xFF38BDF8),
                                 labelStyle: TextStyle(
@@ -682,10 +676,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         const SizedBox(height: 28),
 
-                        // BOTÓN PARA INICIAR LA HISTORIA
                         SizedBox(
                           width: double.infinity,
-                          height: 50,
+                          height: 52,
                           child: ElevatedButton.icon(
                             onPressed: () {
                               Navigator.push(
